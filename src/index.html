@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Metrics Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Optional: Add Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -13,9 +15,16 @@
             <select id="network-selector" class="network-selector">
                 <option value="">Select Network</option>
             </select>
-            <div id="chart-selector" class="chart-selector">
-                <!-- Chart type buttons will be populated here -->
+            
+            <!-- Main category navigation -->
+            <div id="category-nav" class="category-nav">
+                <!-- Category buttons will be dynamically populated -->
             </div>
+        </div>
+        
+        <!-- Sub-category/chart selector -->
+        <div id="chart-selector" class="chart-selector">
+            <!-- Chart type buttons will be dynamically populated -->
         </div>
     </header>
     
