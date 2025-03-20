@@ -93,6 +93,25 @@ export default class ChartFactory {
     });
   }
   
+  static generateColors(count) {
+    const colors = {
+      backgroundColor: [],
+      borderColor: []
+    };
+    
+    // Use brand colors cyclically for the requested count
+    for (let i = 0; i < count; i++) {
+      const colorKeys = Object.keys(this.brandColors.primary);
+      const colorKey = colorKeys[i % colorKeys.length];
+      
+      colors.backgroundColor.push(this.brandColors.primary[colorKey]);
+      colors.borderColor.push(this.brandColors.primary[colorKey]);
+    }
+    
+    return colors;
+  }
+  
+
   /**
    * Get brand pie chart colors
    */
@@ -120,5 +139,48 @@ export default class ChartFactory {
       this.brandColors.accent.orange,
       this.brandColors.accent.pink
     ];
+  }
+
+  /**
+   * Get stacked bar chart colors
+   */
+  static getStackedBarColors() {
+    return [
+      this.brandColors.primary.blue,
+      this.brandColors.accent.cyan,
+      this.brandColors.accent.red,
+      this.brandColors.accent.orange,
+      this.brandColors.accent.pink
+    ];
+  }
+  
+  /**
+   * Generate colors for datasets
+   * @param {number} count - Number of colors to generate
+   * @returns {Object} Background and border colors
+   */
+  static generateColors(count) {
+    const backgroundColor = [];
+    const borderColor = [];
+    
+    const primaryColors = Object.values(this.brandColors.primary);
+    const accentColors = Object.values(this.brandColors.accent);
+    const allColors = [...primaryColors, ...accentColors];
+    
+    for (let i = 0; i < count; i++) {
+      const color = allColors[i % allColors.length];
+      backgroundColor.push(color);
+      
+      // Create a slightly darker version for borders
+      const borderColorMatch = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d*\.?\d*)\)/);
+      if (borderColorMatch) {
+        const [, r, g, b, a] = borderColorMatch;
+        borderColor.push(`rgba(${Math.max(0, r-20)}, ${Math.max(0, g-20)}, ${Math.max(0, b-20)}, ${a})`);
+      } else {
+        borderColor.push(color);
+      }
+    }
+    
+    return { backgroundColor, borderColor };
   }
 }

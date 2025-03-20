@@ -3,23 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart.js CSV Data Visualization</title>
+    <title>Network Metrics Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header>
-        <h1>CSV Data Visualization</h1>
+        <h1>Network Metrics Dashboard</h1>
+        <div class="dashboard-controls">
+            <select id="network-selector" class="network-selector">
+                <option value="">Select Network</option>
+            </select>
+            <div id="chart-selector" class="chart-selector">
+                <!-- Chart type buttons will be populated here -->
+            </div>
+        </div>
     </header>
     
-    <div id="charts-wrapper">
-        <!-- Charts will be dynamically inserted here -->
+    <div id="network-info" class="network-info">
+        <!-- Network info will be displayed here -->
+    </div>
+    
+    <div id="chart-container">
+        <!-- Selected chart will be displayed here -->
     </div>
     
     <!-- Import Chart.js -->
     <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
-    
-    <!-- Import PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     
     <!-- Main application script (using ES modules) -->
     <script type="module" src="js/main.js"></script>
