@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "chart.js": "^4.4.8"
+    "chart.js": "^4.4.8",
+    "express": "^4.21.2"
   }
 }
