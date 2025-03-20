@@ -1,0 +1,2 @@
+ConfigID,NetworkID,NetworkContractAddress,TotalVaults,DelegatorType_NetworkRestake,DelegatorType_OperatorSpecific,SlasherType_VetoSlasher
+Ditto Network_config,Ditto Network,0x8560C667Ae72F28D09465B342A480daB28821f6b,19,94.74,5.26,100.0
