@@ -126,6 +126,17 @@ export default class ChartConfigManager {
           title: 'Collateral Types by Underlying Asset'
         }
       },
+      {
+        id: 'collateral-limits',
+        name: 'Collateral Limits',
+        type: 'bar',
+        category: 'collateral',
+        dataPath: ['economic_security', 'by_collateral'],
+        config: {
+          customTransform: true,
+          title: 'Collateral Limits (Log Scale)'
+        }
+      },
       
       // Curator charts
       {
@@ -149,7 +160,7 @@ export default class ChartConfigManager {
           customTransform: true, // Need custom transform for curator stats
           title: 'Collateral Types by Curator'
         }
-      }
+      },
     ];
   }
 

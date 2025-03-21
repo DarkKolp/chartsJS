@@ -241,6 +241,163 @@ export default class BarChart {
     
     return ChartFactory.create(canvasId, 'bar', { labels: categories, datasets }, options);
   }
+
+  /**
+ * Create a log scale bar chart for collateral limits
+ * @param {string} canvasId - Canvas element ID
+ * @param {Array} data - Transformed data
+ * @param {Object} config - Chart configuration
+ * @returns {Chart} - Chart.js instance
+ */
+  static createLogScale(canvasId, data, { title }) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    // Extract data
+    const labels = data.map(item => item.label);
+    
+    // Separate finite and infinite values
+    const infiniteIndices = [];
+    const finiteValues = data.map((item, index) => {
+      if (item.value === null || item.label === 'WBTC') {
+        infiniteIndices.push(index);
+        return 0; // Zero value (won't be displayed)
+      }
+      return item.value;
+    });
+    
+    // Generate colors based on underlying asset
+    const backgroundColor = data.map(item => {
+      const asset = item.underlyingAsset || 'Unknown';
+      switch(asset) {
+        case 'ETH': return 'rgba(130, 71, 229, 0.8)'; // Purple for ETH
+        case 'BTC': return 'rgba(247, 147, 26, 0.8)'; // Orange for BTC
+        case 'USD': return 'rgba(39, 174, 96, 0.8)';  // Green for USD
+        default: return 'rgba(149, 165, 166, 0.8)';   // Gray for others
+      }
+    });
+    
+    // Prepare chart data
+    const chartData = {
+      labels,
+      datasets: [{
+        label: 'Limit (USD)',
+        data: finiteValues,
+        backgroundColor,
+        borderWidth: 0,
+        borderRadius: 4,
+        maxBarThickness: 30
+      }]
+    };
+    
+    // Configure options with log scale
+    const options = {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 10,
+          right: 30,
+          top: 30,
+          bottom: 10
+        }
+      },
+      scales: {
+        x: {
+          type: 'logarithmic',
+          min: 1, // Minimum value to avoid log(0) issues
+          title: {
+            display: true,
+            text: 'Limit in USD (Log Scale)',
+            font: {
+              size: 12,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            color: 'rgba(200, 200, 200, 0.3)'
+          },
+          ticks: {
+            callback: function(value) {
+              if (value === 0) return '0';
+              
+              const suffixes = ['', 'K', 'M', 'B', 'T'];
+              const suffixNum = Math.floor(Math.log10(value) / 3);
+              const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1);
+              return '$' + shortValue + suffixes[suffixNum];
+            }
+          }
+        },
+        y: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            font: {
+              size: 11
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const index = context.dataIndex;
+              if (infiniteIndices.includes(index)) {
+                return 'Limit: Infinite (∞)';
+              }
+              return data[index].displayValue;
+            }
+          }
+        }
+      }
+    };
+    
+    // Adjust the container height based on number of items
+    const containerHeight = Math.max(300, data.length * 35 + 100);
+    document.getElementById(canvasId).parentNode.style.height = `${containerHeight}px`;
+    
+    // Create the chart instance
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: options
+    });
+    
+    // Add a custom plugin to draw "infinite" text for specific tokens
+    const infiniteLabelsPlugin = {
+      id: 'infiniteLabels',
+      afterDraw: (chart) => {
+        const ctx = chart.ctx;
+        const chartArea = chart.chartArea;
+        const meta = chart.getDatasetMeta(0);
+        
+        infiniteIndices.forEach(index => {
+          // Get the bar position
+          const bar = meta.data[index];
+          const y = bar.y;
+          
+          // Draw the infinity symbol
+          ctx.save();
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 14px "Inter", "Segoe UI", sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('∞ (infinite)', chartArea.left + 10, y);
+          ctx.restore();
+        });
+      }
+    };
+    
+    // Register and attach the plugin
+    Chart.register(infiniteLabelsPlugin);
+    chart.update();
+    
+    return chart;
+  }
   
   /**
    * Create a horizontal bar chart

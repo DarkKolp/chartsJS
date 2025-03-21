@@ -130,6 +130,25 @@ function initChartSelector() {
 }
 
 /**
+ * Load collateral metadata
+ * @returns {Promise<Object>} Collateral metadata
+ */
+async function loadCollateralMeta() {
+  try {
+    const response = await fetch('./data/meta/collateral_meta.json');
+    if (!response.ok) {
+      throw new Error(`Failed to load collateral metadata: ${response.status}`);
+    }
+    window.collateralMeta = await response.json();
+    return window.collateralMeta;
+  } catch (error) {
+    console.error("Error loading collateral metadata:", error);
+    window.collateralMeta = {};
+    return {};
+  }
+}
+
+/**
  * Load network data and initialize navigation
  * @param {string} networkId - Network identifier
  */
@@ -176,16 +195,6 @@ function addReportSectionButtons() {
   buttonContainer.style.gap = '10px';
   buttonContainer.style.marginTop = '15px';
   
-  // Vault Section Button
-  const vaultBtn = document.createElement('button');
-  vaultBtn.textContent = 'Generate Vault Section';
-  vaultBtn.className = 'report-section-button';
-  vaultBtn.style.padding = '8px 15px';
-  vaultBtn.style.backgroundColor = ChartFactory.brandColors.primary.purple;
-  vaultBtn.style.color = 'white';
-  vaultBtn.style.border = 'none';
-  vaultBtn.style.borderRadius = '4px';
-  vaultBtn.style.cursor = 'pointer';
   
   vaultBtn.addEventListener('click', async () => {
     const networkData = networkManager.getCurrentNetworkData();
@@ -307,14 +316,22 @@ function loadChart(chartId) {
   // Create the chart based on type
   let chart;
   switch (chartConfig.type) {
-    case 'bar':
-      chart = BarChart.createBasic(canvas.id, data, {
-        labelKey: chartConfig.config.labelKey,
-        valueKey: chartConfig.config.valueKey,
-        title: chartConfig.config.title
-      });
-      break;
       
+    case 'bar':
+      if (chartId === 'collateral-limits') {
+        chart = BarChart.createLogScale(canvas.id, data, {
+          title: chartConfig.config.title
+        });
+      } else {
+        chart = BarChart.createBasic(canvas.id, data, {
+          labelKey: chartConfig.config.labelKey,
+          valueKey: chartConfig.config.valueKey,
+          title: chartConfig.config.title
+        });
+      }
+      break;
+
+
     case 'pie':
       chart = PieChart.create(canvas.id, data, {
         labelKey: chartConfig.config.labelKey,
@@ -401,7 +418,6 @@ function loadChart(chartId) {
         }
       }
       break;
-
       
     default:
       container.innerHTML = `<div class="error">Unsupported chart type: ${chartConfig.type}</div>`;
@@ -508,7 +524,49 @@ function transformCustomData(data, chartConfig) {
     
     return Object.values(assetGroups);
   }
+
+  // Handle collateral limits with log scale
+  if (chartConfig.category === 'collateral' && chartConfig.id === 'collateral-limits') {
+    // Load collateral metadata for USD conversion
+    let collateralMeta = {};
+    try {
+      // We'll make this async in production, but for this example we'll assume it's loaded
+      collateralMeta = window.collateralMeta || {}; // Fallback if not loaded
+    } catch (error) {
+      console.error("Error loading collateral metadata:", error);
+    }
+    
+    // Transform data to show USD values
+    return data.map(collateral => {
+      const symbol = collateral.collateral_symbol;
+      const limit = parseFloat(collateral.limit);
+      // Consider extremely large values as "infinite"
+      const isInfinite = limit > 1000000000000; // > 1 trillion is likely "infinite"
+      
+      // Get token metadata and price
+      const meta = collateralMeta[symbol] || { usdPrice: 1, underlyingAsset: 'Unknown' };
+      const usdLimit = isInfinite ? null : limit * meta.usdPrice;
+      
+      return {
+        label: symbol,
+        value: usdLimit, // USD value for the chart
+        rawLimit: limit, // Original token amount
+        usdPrice: meta.usdPrice,
+        displayValue: isInfinite ? 
+          "∞" : 
+          `$${(usdLimit || 0).toLocaleString()} (${limit.toLocaleString()} ${symbol})`,
+        underlyingAsset: meta.underlyingAsset,
+        utilization: collateral.utilization_percent
+      };
+    }).sort((a, b) => {
+      // Handle sort with infinite values
+      if (a.value === null) return 1; // Infinite values at the end
+      if (b.value === null) return -1;
+      return b.value - a.value; // Otherwise sort by numeric value
+    });
+  }
 }
+
   
 
 /**
@@ -526,6 +584,8 @@ async function initApp() {
   const networkId = urlParams.get('network');
   const categoryId = urlParams.get('category');
   const chartId = urlParams.get('chart');
+
+  await loadCollateralMeta();
   
   // Set active category if specified
   if (categoryId && chartConfigManager.getCategories()[categoryId]) {

@@ -1,0 +1,135 @@
+{
+    "wstETH": {
+        "tokenSymbol": "wstETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+        "tokenAddress": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "usdPrice": 2440.1747568638098
+    },
+    "mETH": {
+        "tokenSymbol": "mETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+        "tokenAddress": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+        "usdPrice": 2157.8303368001025
+    },
+    "rETH": {
+        "tokenSymbol": "rETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+        "tokenAddress": "0xae78736cd615f374d3085123a210448e74fc6393",
+        "usdPrice": 2297.362754016433
+    },
+    "cbETH": {
+        "tokenSymbol": "cbETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
+        "tokenAddress": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+        "usdPrice": 2222.529698414549
+    },
+    "wBETH": {
+        "tokenSymbol": "wBETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+        "tokenAddress": "0xa2e3356610840701bdf5611a53974510ae27e2e1",
+        "usdPrice": 2008.6240846434791
+    },
+    "swETH": {
+        "tokenSymbol": "swETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xf951E335afb289353dc249e82926178EaC7DEd78",
+        "tokenAddress": "0xf951e335afb289353dc249e82926178eac7ded78",
+        "usdPrice": 2240.6082062580936
+    },
+    "LsETH": {
+        "tokenSymbol": "LsETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549",
+        "tokenAddress": "0x8c1bed5b9a0928467c9b1341da1d7bd5e10b6549",
+        "usdPrice": 2168.43564123915
+    },
+    "WBTC": {
+        "tokenSymbol": "WBTC",
+        "underlyingAsset": "BTC",
+        "collaterallAddress": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "tokenAddress": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "usdPrice": 86075.52994670697
+    },
+    "LBTC": {
+        "tokenSymbol": "LBTC",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0x8236a87084f8b84306f72007f36f2618a5634494",
+        "tokenAddress": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "usdPrice": 86075.52994670697
+    },
+    "IBTC": {
+        "tokenSymbol": "IBTC",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0x20157dbabb84e3bbfe68c349d0d44e48ae7b5ad2",
+        "tokenAddress": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "usdPrice": 86075.52994670697
+    },
+    "lvlwaUSDT": {
+        "tokenSymbol": "lvlwaUSDT",
+        "underlyingAsset": "USD",
+        "collaterallAddress": "0xb723377679b807370Ae8615ae3E76F6D1E75a5F2",
+        "tokenAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "usdPrice": 0.9990314962478379
+    },
+    "lvlwaUSDC": {
+        "tokenSymbol": "lvlwaUSDC",
+        "underlyingAsset": "USD",
+        "collaterallAddress": "0x78c6B27Be6DB520d332b1b44323F94bC831F5e33",
+        "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "usdPrice": 0.9989144040242881
+    },
+    "sUSDe": {
+        "tokenSymbol": "sUSDe",
+        "underlyingAsset": "USD",
+        "collaterallAddress": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+        "tokenAddress": "0x9d39a5de30e57443bff2a8307a4256c8797a3497",
+        "usdPrice": 1.16009834752362
+    },
+    "ENA": {
+        "tokenSymbol": "ENA",
+        "underlyingAsset": "ENA",
+        "collaterallAddress": "0x57e114B691Db790C35207b2e685D4A43181e6061",
+        "tokenAddress": "0x57e114b691db790c35207b2e685d4a43181e6061",
+        "usdPrice": 0.389879889701908
+    },
+    "POND": {
+        "tokenSymbol": "POND",
+        "underlyingAsset": "POND",
+        "collaterallAddress": "0x57b946008913b82e4df85f501cbaed910e58d26c",
+        "tokenAddress": "0x57b946008913b82e4df85f501cbaed910e58d26c",
+        "usdPrice": 0.011289170414573316
+    },
+    "SIS": {
+        "tokenSymbol": "SIS",
+        "underlyingAsset": "SIS",
+        "collaterallAddress": "0xd38bb40815d2b0c2d2c866e0c72c5728ffc76dd9",
+        "tokenAddress": "0xd38bb40815d2b0c2d2c866e0c72c5728ffc76dd9",
+        "usdPrice": 0.06182982476942717
+    },
+    "ZKL": {
+        "tokenSymbol": "ZKL",
+        "underlyingAsset": "ZKL",
+        "collaterallAddress": "0xfc385a1df85660a7e041423db512f779070fcede",
+        "tokenAddress": "0xfc385a1df85660a7e041423db512f779070fcede",
+        "usdPrice": 0.0493
+    },
+    "osETH": {
+        "tokenSymbol": "osETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xf1c9acdc66974dfb6decb12aa385b9cd01190e38",
+        "tokenAddress": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+        "usdPrice": 2222.529698414549
+    },
+    "WETH": {
+        "tokenSymbol": "WETH",
+        "underlyingAsset": "ETH",
+        "collaterallAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "tokenAddress": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+        "usdPrice": 2222.529698414549
+    }
+}
