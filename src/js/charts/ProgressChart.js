@@ -15,121 +15,111 @@ export default class ProgressChart {
   static createMultiple(canvasId, data, { title } = {}) {
     // Sanitize data
     const progressData = Array.isArray(data) ? data : [];
+
+    progressData.sort((a, b) => a.percentage - b.percentage); // Sort by percentage
     
     // Custom plugin to draw multiple progress bars
-    const multiProgressPlugin = {
-      id: 'multiProgress',
-      beforeDraw: (chart) => {
-        const ctx = chart.ctx;
-        const chartArea = chart.chartArea;
+  const multiProgressPlugin = {
+    id: 'multiProgress',
+    beforeDraw: (chart) => {
+      const ctx = chart.ctx;
+      const chartArea = chart.chartArea;
+      
+      // Clear the chart area
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      
+      // Draw title if provided
+      if (title) {
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '600 16px "Inter", "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(title, chart.width / 2, 10);
+      }
+      
+      // Calculate positions with compact spacing
+      const barHeight = 24;
+      const barSpacing = 40; // Reduced spacing for compact display
+      const startY = title ? 40 : 20;
+      const barWidth = Math.min(600, chartArea.right - chartArea.left - 300); // Limit width, leave room for labels
+      const barLeft = chartArea.left + 180; // Space for vault name on left
+      
+      // Draw each progress bar - show all bars, no limit
+      progressData.forEach((item, i) => {
+        // Format percentage to 2 decimal places
+        const percentage = Math.min(Math.max(0, parseFloat((item.percentage || 0).toFixed(2))), 100);
+        const y = startY + i * barSpacing;
         
-        // Clear the chart area
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        
-        // Draw title if provided
-        if (title) {
+        // Draw vault name on left side
+        if (item.label) {
           ctx.fillStyle = '#1e293b';
-          ctx.font = '600 16px "Inter", "Segoe UI", sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-          ctx.fillText(title, chart.width / 2, 10);
+          ctx.font = '500 13px "Inter", "Segoe UI", sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(item.label, chartArea.left, y + barHeight / 2);
         }
         
-        // Calculate positions with compact spacing
-        const barHeight = 24;
-        const barSpacing = 40; // Reduced spacing for compact display
-        const startY = title ? 40 : 20;
-        const barWidth = Math.min(600, chartArea.right - chartArea.left - 300); // Limit width, leave room for labels
-        const barLeft = chartArea.left + 180; // Space for vault name on left
+        // Draw the border/track (limit)
+        ctx.fillStyle = '#f1f5f9';
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
         
-        // Draw each progress bar - show all bars, no limit
-        progressData.forEach((item, i) => {
-          const percentage = Math.min(Math.max(0, item.percentage || 0), 100);
-          const y = startY + i * barSpacing;
-          
-          // Draw vault name on left side
-          if (item.label) {
-            ctx.fillStyle = '#1e293b';
-            ctx.font = '500 13px "Inter", "Segoe UI", sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(item.label, chartArea.left, y + barHeight / 2);
-          }
-          
-          // Draw the border/track (limit)
-          ctx.fillStyle = '#f1f5f9';
-          ctx.strokeStyle = '#e2e8f0';
-          ctx.lineWidth = 1;
-          
+        ctx.beginPath();
+        const radius = barHeight / 2;
+        ctx.roundRect(barLeft, y, barWidth, barHeight, radius);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Determine color based on percentage
+        let color;
+        if (percentage < 50) {
+          color = '#10b981'; // Green for low utilization
+        } else if (percentage < 80) {
+          color = '#f59e0b'; // Amber for medium utilization
+        } else {
+          color = '#ef4444'; // Red for high utilization
+        }
+        
+        // Draw the progress fill
+        const fillWidth = (barWidth * percentage) / 100;
+        if (fillWidth > 0) {
+          ctx.fillStyle = color;
           ctx.beginPath();
-          const radius = barHeight / 2;
-          ctx.roundRect(barLeft, y, barWidth, barHeight, radius);
+          
+          if (fillWidth < 2 * radius) {
+            // Special case for very small percentages
+            ctx.roundRect(barLeft, y, fillWidth, barHeight, [radius, 0, 0, radius]);
+          } else if (fillWidth >= barWidth - 2 * radius) {
+            // Special case for near 100%
+            ctx.roundRect(barLeft, y, fillWidth, barHeight, radius);
+          } else {
+            // Normal case
+            ctx.roundRect(barLeft, y, fillWidth, barHeight, [radius, 0, 0, radius]);
+          }
+          
           ctx.fill();
-          ctx.stroke();
-          
-          // Determine color based on percentage
-          let color;
-          if (percentage < 50) {
-            color = '#10b981'; // Green for low utilization
-          } else if (percentage < 80) {
-            color = '#f59e0b'; // Amber for medium utilization
-          } else {
-            color = '#ef4444'; // Red for high utilization
-          }
-          
-          // Draw the progress fill
-          const fillWidth = (barWidth * percentage) / 100;
-          if (fillWidth > 0) {
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            
-            if (fillWidth < 2 * radius) {
-              // Special case for very small percentages
-              ctx.roundRect(barLeft, y, fillWidth, barHeight, [radius, 0, 0, radius]);
-            } else if (fillWidth >= barWidth - 2 * radius) {
-              // Special case for near 100%
-              ctx.roundRect(barLeft, y, fillWidth, barHeight, radius);
-            } else {
-              // Normal case
-              ctx.roundRect(barLeft, y, fillWidth, barHeight, [radius, 0, 0, radius]);
-            }
-            
-            ctx.fill();
-          }
-          
-          // Draw percentage text inside the bar if there's enough space
-          const percentText = `${percentage}%`;
-          const percentWidth = ctx.measureText(percentText).width;
-          
-          if (fillWidth > percentWidth + 20) {
-            ctx.fillStyle = 'white';
-            ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(percentText, barLeft + fillWidth / 2, y + barHeight / 2);
-          } else {
-            // Draw at the end of the bar
-            ctx.fillStyle = '#1e293b';
-            ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(percentText, barLeft + barWidth + 10, y + barHeight / 2);
-          }
-          
-          // Draw limit value on right side
-          if (item.limit !== undefined) {
-            ctx.fillStyle = '#64748b';
-            ctx.font = '400 13px "Inter", "Segoe UI", sans-serif';
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'middle';
-            
-            const formattedLimit = typeof item.limit === 'number' ? item.limit.toLocaleString() : item.limit;
-            ctx.fillText(formattedLimit, barLeft + barWidth + 120, y + barHeight / 2);
-          }
-        });
-      }
-    };
+        }
+        
+        // Draw percentage text - ALWAYS OUTSIDE for low values
+        const percentText = `${percentage.toFixed(2)}%`;
+        const percentWidth = ctx.measureText(percentText).width;
+
+        // Position the text near the right edge of the bar (inside)
+        const textPadding = 10; // Padding from right edge
+        const textPosition = barLeft + barWidth - percentWidth - textPadding; // Right aligned with padding
+
+        // Always draw inside the bar, aligned to the right edge
+        ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        // Choose text color based on percentage (will be more visible against background)
+        ctx.fillStyle = '#1e293b'; // Dark text for all percentages
+        ctx.fillText(percentText, textPosition, y + barHeight / 2);
+      });
+    }
+  };
     
     // Create an empty chart as a container for our custom rendering
     const emptyData = {

@@ -35,6 +35,7 @@
     "by_collateral": [
       {
         "collateral_symbol": "wstETH",
+        "underlying_asset": "ETH",
         "stake": 508.0729086975606,
         "usd_stake": 1239786.6864501585,
         "limit": 576.0,
@@ -124,6 +125,7 @@
       },
       {
         "collateral_symbol": "swETH",
+        "underlying_asset": "ETH",
         "stake": 64.0,
         "usd_stake": 143398.925200518,
         "limit": 64.0,
@@ -143,6 +145,7 @@
       },
       {
         "collateral_symbol": "cbETH",
+        "underlying_asset": "ETH",
         "stake": 64.0,
         "usd_stake": 142241.90069853113,
         "limit": 64.0,
@@ -162,6 +165,7 @@
       },
       {
         "collateral_symbol": "rETH",
+        "underlying_asset": "ETH",
         "stake": 64.0,
         "usd_stake": 147031.2162570517,
         "limit": 64.0,

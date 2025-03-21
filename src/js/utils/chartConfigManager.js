@@ -92,13 +92,13 @@ export default class ChartConfigManager {
       {
         id: 'collateral-distribution',
         name: 'Collateral Distribution',
-        type: 'bar',
+        type: 'pie',  // Changed from 'bar' to 'pie'
         category: 'collateral',
         dataPath: ['economic_security', 'collateral_distribution'],
         config: {
           labelKey: 'collateral_symbol',
-          valueKey: 'usd_stake',
-          title: 'USD Stake by Collateral'
+          valueKey: 'percentage',  // Using percentage directly as it's already available
+          title: 'Collateral Distribution'
         }
       },
       {
@@ -118,11 +118,12 @@ export default class ChartConfigManager {
         name: 'Collateral Types',
         type: 'pie',
         category: 'collateral',
-        dataPath: ['economic_security', 'collateral_distribution'],
+        dataPath: ['economic_security', 'by_collateral'],
         config: {
-          labelKey: 'collateral_symbol',
-          valueKey: 'percentage',
-          title: 'Collateral Types Distribution'
+          customTransform: true,
+          labelKey: 'collateral_symbol',  // This should match your returned property
+          valueKey: 'percentage',         // This should match your returned property
+          title: 'Collateral Types by Underlying Asset'
         }
       },
       

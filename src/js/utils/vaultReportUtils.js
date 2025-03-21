@@ -1,5 +1,6 @@
 import ChartRegistry from '../charts/chartRegistry.js';
 import ChartFactory from '../charts/chartFactory.js';
+import ChartExportUtils from './chartExportUtils.js';
 
 // Updated VaultReportUtils class
 export default class VaultReportUtils {
@@ -160,12 +161,8 @@ export default class VaultReportUtils {
     delegatorChartDiv.appendChild(delegatorCanvas);
     
     // Add export button for delegator chart
-    const delegatorExportBtn = document.createElement('button');
-    delegatorExportBtn.textContent = 'Export Chart';
-    delegatorExportBtn.className = 'chart-export-btn';
-    delegatorExportBtn.addEventListener('click', () => {
-      this.exportSingleChart(delegatorChart, 'delegator-types');
-    });
+    const delegatorExportBtn = this.addExportButton(delegatorChart, 'delegator-types-chart', 'delegator-types');
+
     
     delegatorChart.appendChild(delegatorTitle);
     delegatorChart.appendChild(delegatorChartDiv);
@@ -187,12 +184,7 @@ export default class VaultReportUtils {
     slasherChartDiv.appendChild(slasherCanvas);
     
     // Add export button for slasher chart
-    const slasherExportBtn = document.createElement('button');
-    slasherExportBtn.textContent = 'Export Chart';
-    slasherExportBtn.className = 'chart-export-btn';
-    slasherExportBtn.addEventListener('click', () => {
-      this.exportSingleChart(slasherChart, 'slasher-types');
-    });
+    const slasherExportBtn = this.addExportButton(slasherChart, 'slasher-types-chart', 'slasher-types');
     
     slasherChart.appendChild(slasherTitle);
     slasherChart.appendChild(slasherChartDiv);
@@ -237,21 +229,83 @@ export default class VaultReportUtils {
    */
   static exportSingleChart(chartElement, filename) {
     if (window.html2canvas) {
+      // Hide export button temporarily
+      const exportBtn = document.createElement('button');
+        exportBtn.textContent = 'Export Chart';
+        exportBtn.className = 'chart-export-btn';
+        exportBtn.addEventListener('click', () => {
+          // For higher quality chart-only export
+          this.exportChartToHighResPNG('delegator-types-chart', 'delegator-types');
+        });
+      const exportBtnDisplay = exportBtn ? exportBtn.style.display : 'block';
+      if (exportBtn) exportBtn.style.display = 'none';
+      
+      // Add temporary styles for cleaner export
+      chartElement.style.padding = '10px'; // Reduce padding
+      chartElement.style.backgroundColor = '#ffffff';
+      
       html2canvas(chartElement, {
-        scale: 3, // Higher resolution for better quality when reduced
+        scale: 4, // Increase resolution
         backgroundColor: '#ffffff',
-        logging: false
+        logging: false,
+        useCORS: true,
       }).then(canvas => {
+        // Create download
         const link = document.createElement('a');
         link.download = `${filename}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL('image/png', 1.0); // Max quality
         link.click();
+        
+        // Restore original styles
+        chartElement.style.padding = '';
+        if (exportBtn) exportBtn.style.display = exportBtnDisplay;
       });
     } else {
       console.error("html2canvas is not available");
       alert("Export requires html2canvas library");
     }
   }
+  
+  // New Chart.js native method (for higher quality chart-only exports)
+  static exportChartToHighResPNG(canvasId, filename) {
+    const chart = this.chartInstances.get(canvasId);
+    if (!chart) return;
+    
+    // Get original canvas and context
+    const originalCanvas = chart.canvas;
+    
+    // Save current device pixel ratio
+    const originalRatio = window.devicePixelRatio;
+    const originalWidth = originalCanvas.width;
+    const originalHeight = originalCanvas.height;
+    
+    try {
+      // Temporarily increase resolution
+      window.devicePixelRatio = 3;
+      originalCanvas.width = originalWidth * 3;
+      originalCanvas.height = originalHeight * 3;
+      
+      // Redraw the chart at higher resolution
+      chart.resize();
+      chart.draw();
+      
+      // Create download
+      const link = document.createElement('a');
+      link.download = `${filename}.png`;
+      link.href = originalCanvas.toDataURL('image/png', 1.0);
+      link.click();
+      
+      // Restore original size and redraw
+      window.devicePixelRatio = originalRatio;
+      originalCanvas.width = originalWidth;
+      originalCanvas.height = originalHeight;
+      chart.resize();
+      chart.draw();
+    } catch (error) {
+      console.error('Error generating high-res export:', error);
+    }
+  }
+  
   
   /**
    * Create a donut chart
@@ -268,7 +322,7 @@ export default class VaultReportUtils {
       existingChart.destroy();
     }
     
-    // Create the chart
+    // Create the chart with optimized settings
     const chart = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -287,6 +341,9 @@ export default class VaultReportUtils {
         responsive: true,
         maintainAspectRatio: false,
         cutout: '60%',
+        layout: {
+          padding: 10 // Reduce default padding
+        },
         plugins: {
           legend: {
             position: 'bottom',
@@ -324,21 +381,27 @@ export default class VaultReportUtils {
             color: '#fff',
             font: {
               weight: 'bold',
-              size: 14 // Increased font size
+              size: 14
             },
-            // Only show labels for values >= 5%
-            display: (context) => context.dataset.data[context.dataIndex] >= 5
+            display: (context) => context.dataset.data[context.dataIndex] >= 5,
+            textAlign: 'center'
           }
+        },
+        animation: {
+          duration: 0 // Disable animations during export
         }
       },
-      plugins: [window.ChartDataLabels].filter(Boolean) // Only include if available
+      plugins: [window.ChartDataLabels].filter(Boolean)
     });
     
+    ChartExportUtils.registerChart(canvasId, chart);
+
     // Store chart reference
     this.chartInstances.set(canvasId, chart);
     
     return chart;
   }
+  
   
   /**
    * Add the Report button to the navigation
@@ -384,6 +447,20 @@ export default class VaultReportUtils {
     
     // Start observing the document body for changes
     observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  
+  static addExportButton(chartContainer, chartId, filename) {
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = 'Export Chart';
+    exportBtn.className = 'chart-export-btn';
+    exportBtn.addEventListener('click', () => {
+      // Use our new utility
+      ChartExportUtils.exportChart(chartId, filename);
+    });
+    
+    chartContainer.appendChild(exportBtn);
+    return exportBtn;
   }
   
   /**

@@ -1,4 +1,5 @@
 import { ChartInteractionPlugin } from '../plugins/chartInteractionPlugin.js';
+import ChartExportUtils from '../utils/chartExportUtils.js';
 /**
  * Chart Factory with updated branding
  */
@@ -210,12 +211,17 @@ export default class ChartFactory {
       });
     }
     
-    return new Chart(ctx, {
+    const chart = new Chart(ctx, {
       type,
       data,
-      options: mergedOptions,
+      options: this.mergeDeep({ ...defaultOptions }, options),
       plugins: [ChartInteractionPlugin]
     });
+    
+    // Register with export utility
+    ChartExportUtils.registerChart(canvasId, chart);
+    
+    return chart;
   }
   
   /**

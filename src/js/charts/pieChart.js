@@ -14,9 +14,9 @@ export default class PieChart {
    * @returns {Chart} - Chart.js instance
    */
   static create(canvasId, data, { labelKey, valueKey, title }) {
-    const { labels, values } = DataTransformer.extractBasicData(data, { labelKey, valueKey });
+    const { labels, values } = DataTransformer.extractBasicData(data, { labelKey: labelKey || 'label', valueKey: valueKey || 'value' });
     
-    // Custom color palette exactly matching mockups
+    // Custom color palette to match mockups
     const colorPalette = [
       'rgba(130, 71, 229, 1)',     // Deep purple (primary)
       'rgba(164, 102, 246, 0.8)',   // Medium purple
@@ -29,11 +29,11 @@ export default class PieChart {
     ];
     
     // Format values to show percentages of total
-    const total = values.reduce((sum, value) => sum + value, 0);
-    const percentages = values.map(value => ((value / total) * 100).toFixed(1));
+    const total = values.reduce((sum, value) => sum + parseFloat(value), 0);
+    const percentages = values.map(value => ((parseFloat(value) / total) * 100).toFixed(1));
     
     const chartData = {
-      labels,
+      labels: labels.map(l => l || 'Unknown'),  // Ensure no undefined labels
       datasets: [{
         label: title || valueKey,
         data: values,
@@ -49,25 +49,15 @@ export default class PieChart {
       cutout: '0%',
       layout: {
         padding: {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: 20
         }
       },
       scales: {
-        x: {
-          display: false,
-          grid: {
-            display: false
-          }
-        },
-        y: {
-          display: false,
-          grid: {
-            display: false
-          }
-        }
+        x: { display: false },
+        y: { display: false }
       },
       plugins: {
         legend: {
@@ -86,58 +76,38 @@ export default class PieChart {
             },
             color: '#1E293B',
             formatter: (legendItem, index) => {
-              const value = values[index];
-              const percentage = percentages[index];
+              if (!legendItem.text || legendItem.text === 'undefined') {
+                legendItem.text = 'Unknown';
+              }
+              
+              const value = values[index] || 0;
+              const percentage = percentages[index] || 0;
               return `${legendItem.text}: ${percentage}%`;
             }
           }
         },
-        title: {
-          display: false // We'll handle the title separately in the container
-        },
         tooltip: {
           callbacks: {
             label: function(context) {
-              const label = context.label || '';
+              const label = context.label || 'Unknown';
               const value = context.raw;
-              const percentage = ((value / total) * 100).toFixed(1);
+              const percentage = ((parseFloat(value) / total) * 100).toFixed(1);
               
               if (valueKey && (valueKey.toLowerCase().includes('usd') || 
                   valueKey.toLowerCase().includes('stake'))) {
-                return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                return `${label}: $${parseFloat(value).toLocaleString()} (${percentage}%)`;
               }
               
-              return `${label}: ${value.toLocaleString()} (${percentage}%)`;
-            },
-            title: function(context) {
-              return context[0].label;
-            },
-            animation: {
-              duration: 150
-            },
-            position: 'nearest'
-          },
-          padding: 12,
-          boxPadding: 6,
-          titleFont: {
-            size: 13
-          },
-          bodyFont: {
-            size: 13
-          },
-          cornerRadius: 6,
-          backgroundColor: 'white',
-          titleColor: '#1E293B',
-          bodyColor: '#64748B',
-          borderColor: '#E2E8F0',
-          borderWidth: 1
+              return `${label}: ${parseFloat(value).toLocaleString()} (${percentage}%)`;
+            }
+          }
         }
       }
     };
     
-    // Create a custom plugin that adds the title to match mockup
-    const titlePlugin = {
-      id: 'customTitle',
+    // Create a custom plugin to reduce label overlapping
+    const labelPositionPlugin = {
+      id: 'labelPosition',
       beforeDraw: (chart) => {
         if (title) {
           const ctx = chart.ctx;
@@ -152,14 +122,19 @@ export default class PieChart {
       }
     };
     
+    // Set up responsive sizing
+    const canvas = document.getElementById(canvasId);
+    canvas.style.height = '300px'; // Fixed height for consistency
+    
     // Create chart with plugins
     return new Chart(document.getElementById(canvasId).getContext('2d'), {
       type: 'pie',
       data: chartData,
       options: options,
-      plugins: [titlePlugin]
+      plugins: [labelPositionPlugin]
     });
   }
+  
   
   /**
    * Create a doughnut chart

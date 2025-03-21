@@ -183,6 +183,22 @@ h1 {
   color: #e11d48;
 }
 
+.donut-chart-card.export-mode {
+  padding: 10px;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.donut-chart-title.export-mode {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.donut-chart-container.export-mode {
+  margin: 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .dashboard-controls {
@@ -213,5 +229,25 @@ h1 {
   
   #chart-container {
     height: 400px;
+  }
+}
+
+.exporting .chart-export-btn,
+.exporting .export-button {
+  display: none !important;
+}
+
+.exporting {
+  background-color: white;
+  padding: 10px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Add media styles for print/export */
+@media print {
+  .chart-export-btn,
+  .export-button {
+    display: none !important;
   }
 }

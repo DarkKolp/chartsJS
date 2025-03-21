@@ -86,6 +86,15 @@ function initCategoryNav() {
     
     navContainer.appendChild(button);
   });
+
+  // Ensure collateral category is visible when directly accessing via URL
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('category') === 'collateral') {
+    document.querySelector('[data-category="collateral"]')?.classList.add('active');
+    activeCategory = 'collateral';
+    initChartSelector();
+  }
+
 }
 
 /**
@@ -322,17 +331,33 @@ function loadChart(chartId) {
       });
       break;
       
-    case 'progress':
-      if (Array.isArray(data) && data.length > 0) {
-        // For collateral utilization, create a radial progress chart
-        const collateralData = data[0]; // First collateral for demo
-        chart = ProgressChart.createRadial(canvas.id, collateralData.utilization_percent, {
-          title: `${collateralData.collateral_symbol} Utilization`,
-          value: collateralData.stake,
-          limit: collateralData.limit
-        });
-      }
-      break;
+      case 'progress':
+        if (Array.isArray(data) && data.length > 0) {
+          if (chartId === 'collateral-utilization') {
+            // For collateral utilization, create multiple progress bars
+            const progressData = data.map(collateral => ({
+              label: collateral.collateral_symbol,
+              percentage: collateral.utilization_percent,
+              value: collateral.stake,
+              limit: collateral.limit
+            }));
+            
+            chart = ProgressChart.createMultiple(canvas.id, progressData, {
+              title: 'Collateral Utilization'
+            });
+          } else {
+            // For single collateral display
+            const collateralData = data[0];
+            // Use create instead of createRadial
+            chart = ProgressChart.create(canvas.id, collateralData.utilization_percent, {
+              title: `${collateralData.collateral_symbol} Utilization`,
+              subtitle: collateralData.collateral_symbol,
+              value: collateralData.stake,
+              limit: collateral.limit
+            });
+          }
+        }
+        break;
       
     case 'progress-multiple':
       if (Array.isArray(data) && data.length > 0) {
@@ -350,6 +375,33 @@ function loadChart(chartId) {
         });
       }
       break;
+
+    case 'progress':
+      if (Array.isArray(data) && data.length > 0) {
+        // For collateral utilization, create multiple progress bars
+        if (chartId === 'collateral-utilization') {
+          const progressData = data.map(collateral => ({
+            label: collateral.collateral_symbol,
+            percentage: collateral.utilization_percent,
+            value: collateral.stake,
+            limit: collateral.limit
+          }));
+          
+          chart = ProgressChart.createMultiple(canvas.id, progressData, {
+            title: 'Collateral Utilization'
+          });
+        } else {
+          // For single collateral (fallback to existing behavior)
+          const collateralData = data[0];
+          chart = ProgressChart.create(canvas.id, collateralData.utilization_percent, {
+            title: `${collateralData.collateral_symbol} Utilization`,
+            value: collateralData.stake,
+            limit: collateralData.limit
+          });
+        }
+      }
+      break;
+
       
     default:
       container.innerHTML = `<div class="error">Unsupported chart type: ${chartConfig.type}</div>`;
@@ -413,9 +465,51 @@ function transformCustomData(data, chartConfig) {
       return result;
     }
   }
-  
-  return data;
+
+  // Handle collateral types by underlying asset
+  if (chartConfig.category === 'collateral' && chartConfig.id === 'collateral-types') {
+    // Group by underlying asset
+    const assetGroups = {};
+    let totalUsdStake = 0;
+    
+    // First pass: group and sum
+    data.forEach(collateral => {
+      // Carefully extract the underlying asset
+      let asset = 'Unknown';
+      
+      // Check each vault for the underlying_asset
+      if (collateral.vaults && collateral.vaults.length > 0) {
+        // Find the first vault with an underlying_asset
+        for (const vault of collateral.vaults) {
+          if (vault.underlying_asset) {
+            asset = vault.underlying_asset;
+            break;
+          }
+        }
+      }
+      
+      if (!assetGroups[asset]) {
+        assetGroups[asset] = {
+          label: asset,
+          usd_stake: 0,
+          percentage: 0
+        };
+      }
+      
+      assetGroups[asset].usd_stake += collateral.usd_stake;
+      totalUsdStake += collateral.usd_stake;
+    });
+    
+    // Second pass: calculate percentages
+    Object.values(assetGroups).forEach(group => {
+      group.percentage = (group.usd_stake / totalUsdStake) * 100;
+      group.value = group.percentage.toFixed(1); // For display
+    });
+    
+    return Object.values(assetGroups);
+  }
 }
+  
 
 /**
  * Initialize the application
