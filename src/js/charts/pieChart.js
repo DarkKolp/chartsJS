@@ -108,7 +108,14 @@ export default class PieChart {
               }
               
               return `${label}: ${value.toLocaleString()} (${percentage}%)`;
-            }
+            },
+            title: function(context) {
+              return context[0].label;
+            },
+            animation: {
+              duration: 150
+            },
+            position: 'nearest'
           },
           padding: 12,
           boxPadding: 6,

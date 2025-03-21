@@ -1,3 +1,4 @@
+import { ChartInteractionPlugin } from '../plugins/chartInteractionPlugin.js';
 /**
  * Chart Factory with updated branding
  */
@@ -48,20 +49,35 @@ export default class ChartFactory {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top',
+          position: 'right', // Better for pie charts
           align: 'start',
           labels: {
             usePointStyle: true,
             pointStyle: 'circle',
-            padding: 20,
-            font: {
-              family: "'Inter', 'Segoe UI', sans-serif",
-              size: 12,
-              weight: '500'
-            },
-            color: this.brandColors.text.dark
+            boxWidth: 8,
+            boxHeight: 8,
+            padding: 15,
+            // Truncate long labels
+            generateLabels: function(chart) {
+              const original = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+              original.forEach(label => {
+                if (label.text.length > 25) {
+                  label.text = label.text.substring(0, 22) + '...';
+                }
+              });
+              return original;
+            }
           }
         },
+        layout: {
+          padding: {
+            // Dynamic padding based on screen size
+            top: window.innerWidth < 768 ? 10 : 20,
+            right: window.innerWidth < 768 ? 10 : 20,
+            bottom: window.innerWidth < 768 ? 10 : 20,
+            left: window.innerWidth < 768 ? 10 : 20
+          }
+        },     
         tooltip: {
           backgroundColor: this.brandColors.background.white,
           titleColor: this.brandColors.text.dark,
@@ -97,6 +113,14 @@ export default class ChartFactory {
               }
               return label;
             }
+          }
+        },
+        accessibility: {
+          enabled: true,
+          description: 'Chart displaying network metrics',
+          focusBorder: {
+            color: 'rgba(130, 71, 229, 0.8)',
+            width: 2
           }
         }
       },
@@ -189,7 +213,8 @@ export default class ChartFactory {
     return new Chart(ctx, {
       type,
       data,
-      options: mergedOptions
+      options: mergedOptions,
+      plugins: [ChartInteractionPlugin]
     });
   }
   

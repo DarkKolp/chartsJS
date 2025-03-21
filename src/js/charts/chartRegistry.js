@@ -9,11 +9,18 @@ export default class ChartRegistry {
      * @param {Chart} chart - Chart.js instance
      */
     static register(id, chart) {
+      // Add performance safeguard
       if (this.registry.has(id)) {
-        this.registry.get(id).destroy();
+        const existingChart = this.registry.get(id);
+        if (existingChart && typeof existingChart.destroy === 'function') {
+          existingChart.destroy();
+        }
       }
       this.registry.set(id, chart);
-    }
+      
+      // Add option for automatic chart cleanup on window events
+      window.addEventListener('beforeunload', () => this.destroyAll());
+    }    
   
     /**
      * Get a chart instance by ID

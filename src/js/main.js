@@ -2,10 +2,11 @@ import DataTransformer from './utils/dataTransformer.js';
 import LineChart from './charts/lineChart.js';
 import BarChart from './charts/barChart.js';
 import PieChart from './charts/pieChart.js';
-import ProgressChart from './charts/progressChart.js';
+import ProgressChart from './charts/ProgressChart.js';
 import ChartRegistry from './charts/chartRegistry.js';
 import NetworkManager from './utils/networkManager.js';
 import ChartConfigManager from './utils/chartConfigManager.js';
+import ChartFactory from './charts/chartFactory.js';
 
 // Global instances
 const networkManager = new NetworkManager();
@@ -139,6 +140,9 @@ async function loadNetwork(networkId) {
     
     // Initialize chart selector for default category
     initChartSelector();
+
+    // Add report section buttons
+    addReportSectionButtons();
     
     // Auto-select the first chart in the active category
     const charts = chartConfigManager.getChartsByCategory(activeCategory);
@@ -151,6 +155,56 @@ async function loadNetwork(networkId) {
   } catch (error) {
     document.getElementById('chart-container').innerHTML = `<div class="error">Failed to load network: ${error.message}</div>`;
   }
+}
+
+function addReportSectionButtons() {
+  const container = document.querySelector('.network-info');
+  if (!container) return;
+  
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'report-buttons';
+  buttonContainer.style.display = 'flex';
+  buttonContainer.style.gap = '10px';
+  buttonContainer.style.marginTop = '15px';
+  
+  // Vault Section Button
+  const vaultBtn = document.createElement('button');
+  vaultBtn.textContent = 'Generate Vault Section';
+  vaultBtn.className = 'report-section-button';
+  vaultBtn.style.padding = '8px 15px';
+  vaultBtn.style.backgroundColor = ChartFactory.brandColors.primary.purple;
+  vaultBtn.style.color = 'white';
+  vaultBtn.style.border = 'none';
+  vaultBtn.style.borderRadius = '4px';
+  vaultBtn.style.cursor = 'pointer';
+  
+  vaultBtn.addEventListener('click', async () => {
+    const networkData = networkManager.getCurrentNetworkData();
+    if (!networkData) return;
+    
+    // Create report container if it doesn't exist
+    let reportContainer = document.getElementById('network-report-container');
+    if (!reportContainer) {
+      reportContainer = document.createElement('div');
+      reportContainer.id = 'network-report-container';
+      reportContainer.className = 'network-report-container';
+      reportContainer.style.backgroundColor = '#f8f9fa';
+      reportContainer.style.padding = '20px';
+      reportContainer.style.marginTop = '20px';
+      reportContainer.style.borderRadius = '8px';
+      document.body.appendChild(reportContainer);
+    }
+    
+    // Import VaultReportUtils dynamically
+    const VaultReportUtils = (await import('./utils/vaultReportUtils.js')).default;
+    VaultReportUtils.generateVaultSection('network-report-container', networkData);
+    
+    // Scroll to report section
+    reportContainer.scrollIntoView({ behavior: 'smooth' });
+  });
+  
+  buttonContainer.appendChild(vaultBtn);
+  container.appendChild(buttonContainer);
 }
 
 /**
@@ -302,9 +356,31 @@ function loadChart(chartId) {
       return;
   }
   
+  setupChartFiltering(chart, chartId);
   // Register the chart
   ChartRegistry.register(chartId, chart);
   currentChart = chartId;
+}
+
+function setupChartFiltering(chart, chartId) {
+  chart.canvas.addEventListener('chartfilter', (e) => {
+    const { label } = e.detail;
+    
+    // Apply filter to other charts
+    ChartRegistry.registry.forEach((otherChart, otherId) => {
+      if (otherId !== chartId) {
+        // Filter logic depends on chart type and data relationship
+        otherChart.data.datasets.forEach(dataset => {
+          dataset.backgroundColor = dataset.data.map((_, i) => 
+            otherChart.data.labels[i] === label 
+              ? ChartFactory.brandColors.primary.purple 
+              : ChartFactory.brandColors.primary.lightPurple
+          );
+        });
+        otherChart.update();
+      }
+    });
+  });
 }
 
 /**
@@ -382,6 +458,11 @@ async function initApp() {
       }
     }
   }
+
+  import('./utils/vaultReportUtils.js').then(module => {
+    const VaultReportUtils = module.default;
+    VaultReportUtils.initialize(networkManager);
+  }).catch(err => console.error('Failed to load vault report utils:', err));  
 }
 
 // Initialize when the DOM is ready

@@ -60,4 +60,27 @@ export default class DataTransformer {
       
       return result;
     }
+
+    static dataCache = new Map();
+
+    static extractFromPath(data, path, cacheKey) {
+      if (cacheKey && this.dataCache.has(cacheKey)) {
+        return this.dataCache.get(cacheKey);
+      }
+      
+      let result = data;
+      for (const key of path) {
+        if (result && result[key] !== undefined) {
+          result = result[key];
+        } else {
+          console.error(`Path ${path.join('.')} not found in data`);
+          return [];
+        }
+      }
+      
+      if (cacheKey) {
+        this.dataCache.set(cacheKey, result);
+      }
+      return result;
+    }
   }
