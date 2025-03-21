@@ -105,23 +105,6 @@ export default class PieChart {
       }
     };
     
-    // Create a custom plugin to reduce label overlapping
-    const labelPositionPlugin = {
-      id: 'labelPosition',
-      beforeDraw: (chart) => {
-        if (title) {
-          const ctx = chart.ctx;
-          ctx.save();
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-          ctx.font = "bold 16px 'Inter', 'Segoe UI', sans-serif";
-          ctx.fillStyle = '#1E293B';
-          ctx.fillText(title, chart.width / 2, 10);
-          ctx.restore();
-        }
-      }
-    };
-    
     // Set up responsive sizing
     const canvas = document.getElementById(canvasId);
     canvas.style.height = '300px'; // Fixed height for consistency
@@ -130,11 +113,9 @@ export default class PieChart {
     return new Chart(document.getElementById(canvasId).getContext('2d'), {
       type: 'pie',
       data: chartData,
-      options: options,
-      plugins: [labelPositionPlugin]
+      options: options
     });
   }
-  
   
   /**
    * Create a doughnut chart

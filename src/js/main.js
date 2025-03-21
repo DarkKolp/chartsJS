@@ -7,6 +7,7 @@ import ChartRegistry from './charts/chartRegistry.js';
 import NetworkManager from './utils/networkManager.js';
 import ChartConfigManager from './utils/chartConfigManager.js';
 import ChartFactory from './charts/chartFactory.js';
+import ReportChartManager from './utils/reportChartManager.js';
 
 // Global instances
 const networkManager = new NetworkManager();
@@ -195,6 +196,52 @@ function addReportSectionButtons() {
   buttonContainer.style.gap = '10px';
   buttonContainer.style.marginTop = '15px';
   
+  // Create report button
+  const reportBtn = document.createElement('button');
+  reportBtn.className = 'category-button';
+  reportBtn.textContent = 'Generate Full Report';
+  reportBtn.style.backgroundColor = '#8247e5';
+  reportBtn.style.color = 'white';
+  reportBtn.style.padding = '8px 15px';
+  
+  reportBtn.addEventListener('click', async () => {
+    const networkData = networkManager.getCurrentNetworkData();
+    if (!networkData) return;
+    
+    // Create or get report container
+    let reportContainer = document.getElementById('network-report-container');
+    if (!reportContainer) {
+      reportContainer = document.createElement('div');
+      reportContainer.id = 'network-report-container';
+      reportContainer.style.backgroundColor = '#f8fafc';
+      reportContainer.style.padding = '20px';
+      reportContainer.style.margin = '20px';
+      reportContainer.style.borderRadius = '8px';
+      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+      document.body.appendChild(reportContainer);
+    } else {
+      reportContainer.innerHTML = '';
+    }
+    
+    // Show loading indicator
+    reportContainer.innerHTML = '<div style="text-align: center; padding: 40px;">Generating report...</div>';
+    
+    // Scroll to report section
+    reportContainer.scrollIntoView({ behavior: 'smooth' });
+    
+    // Use our new ReportChartManager to generate the full report
+    setTimeout(() => {
+      ReportChartManager.generateFullReport('network-report-container', networkData);
+    }, 100);
+  });
+  
+  // Create vault report button (using existing VaultReportUtils)
+  const vaultBtn = document.createElement('button');
+  vaultBtn.className = 'category-button';
+  vaultBtn.textContent = 'Vault Report';
+  vaultBtn.style.backgroundColor = '#4b5563';
+  vaultBtn.style.color = 'white';
+  vaultBtn.style.padding = '8px 15px';
   
   vaultBtn.addEventListener('click', async () => {
     const networkData = networkManager.getCurrentNetworkData();
@@ -205,12 +252,14 @@ function addReportSectionButtons() {
     if (!reportContainer) {
       reportContainer = document.createElement('div');
       reportContainer.id = 'network-report-container';
-      reportContainer.className = 'network-report-container';
-      reportContainer.style.backgroundColor = '#f8f9fa';
+      reportContainer.style.backgroundColor = '#f8fafc';
       reportContainer.style.padding = '20px';
-      reportContainer.style.marginTop = '20px';
+      reportContainer.style.margin = '20px';
       reportContainer.style.borderRadius = '8px';
+      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
       document.body.appendChild(reportContainer);
+    } else {
+      reportContainer.innerHTML = '';
     }
     
     // Import VaultReportUtils dynamically
@@ -221,9 +270,83 @@ function addReportSectionButtons() {
     reportContainer.scrollIntoView({ behavior: 'smooth' });
   });
   
+  // Create operators report button
+  const operatorsBtn = document.createElement('button');
+  operatorsBtn.className = 'category-button';
+  operatorsBtn.textContent = 'Operators Report';
+  operatorsBtn.style.backgroundColor = '#4b5563';
+  operatorsBtn.style.color = 'white';
+  operatorsBtn.style.padding = '8px 15px';
+  
+  operatorsBtn.addEventListener('click', async () => {
+    const networkData = networkManager.getCurrentNetworkData();
+    if (!networkData) return;
+    
+    // Create report container if it doesn't exist
+    let reportContainer = document.getElementById('network-report-container');
+    if (!reportContainer) {
+      reportContainer = document.createElement('div');
+      reportContainer.id = 'network-report-container';
+      reportContainer.style.backgroundColor = '#f8fafc';
+      reportContainer.style.padding = '20px';
+      reportContainer.style.margin = '20px';
+      reportContainer.style.borderRadius = '8px';
+      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+      document.body.appendChild(reportContainer);
+    } else {
+      reportContainer.innerHTML = '';
+    }
+    
+    // Use ReportChartManager to generate operators charts
+    ReportChartManager.createOperatorsCharts('network-report-container', networkData);
+    
+    // Scroll to report section
+    reportContainer.scrollIntoView({ behavior: 'smooth' });
+  });
+  
+  // Create collateral report button
+  const collateralBtn = document.createElement('button');
+  collateralBtn.className = 'category-button';
+  collateralBtn.textContent = 'Collateral Report';
+  collateralBtn.style.backgroundColor = '#4b5563';
+  collateralBtn.style.color = 'white';
+  collateralBtn.style.padding = '8px 15px';
+  
+  collateralBtn.addEventListener('click', async () => {
+    const networkData = networkManager.getCurrentNetworkData();
+    if (!networkData) return;
+    
+    // Create report container if it doesn't exist
+    let reportContainer = document.getElementById('network-report-container');
+    if (!reportContainer) {
+      reportContainer = document.createElement('div');
+      reportContainer.id = 'network-report-container';
+      reportContainer.style.backgroundColor = '#f8fafc';
+      reportContainer.style.padding = '20px';
+      reportContainer.style.margin = '20px';
+      reportContainer.style.borderRadius = '8px';
+      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+      document.body.appendChild(reportContainer);
+    } else {
+      reportContainer.innerHTML = '';
+    }
+    
+    // Use ReportChartManager to generate collateral charts
+    ReportChartManager.createCollateralCharts('network-report-container', networkData);
+    
+    // Scroll to report section
+    reportContainer.scrollIntoView({ behavior: 'smooth' });
+  });
+  
+  // Add all buttons to the container
+  buttonContainer.appendChild(reportBtn);
   buttonContainer.appendChild(vaultBtn);
+  buttonContainer.appendChild(operatorsBtn);
+  buttonContainer.appendChild(collateralBtn);
+  
   container.appendChild(buttonContainer);
 }
+
 
 /**
  * Update network information display

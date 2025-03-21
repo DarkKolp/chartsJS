@@ -16,8 +16,8 @@ export default class ProgressChart {
     // Sanitize data
     const progressData = Array.isArray(data) ? data : [];
     
-    // Sort data from least to most utilized
-    progressData.sort((a, b) => a.percentage - b.percentage);
+    // Sort data from highest to lowest utilization
+    progressData.sort((a, b) => b.percentage - a.percentage);
     
     // Custom plugin to draw multiple progress bars
     const multiProgressPlugin = {
@@ -30,20 +30,11 @@ export default class ProgressChart {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, chart.width, chart.height);
         
-        // Draw title if provided
-        if (title) {
-          ctx.fillStyle = '#1e293b';
-          ctx.font = '600 16px "Inter", "Segoe UI", sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-          ctx.fillText(title, chart.width / 2, 10);
-        }
-        
         // Calculate positions with compact spacing
         const barHeight = 24;
-        const barSpacing = 40; // Reduced spacing for compact display
-        const startY = title ? 40 : 20;
-        const barWidth = Math.min(600, chartArea.right - chartArea.left - 300); // Limit width, leave room for labels
+        const barSpacing = 40; // Spacing between bars
+        const startY = 20; // Start without title space
+        const barWidth = Math.min(600, chartArea.right - chartArea.left - 300);
         const barLeft = chartArea.left + 180; // Space for vault name on left
         
         // Draw each progress bar
@@ -101,32 +92,34 @@ export default class ProgressChart {
             ctx.fill();
           }
           
-          // Draw percentage text inside or outside based on available space
-          const percentText = `${percentage.toFixed(2)}%`;
+          // Draw percentage text
+          const percentText = percentage === 0 ? '0.00%' : 
+                            (percentage === 100 ? '100.00%' : `${percentage.toFixed(2)}%`);
           const percentWidth = ctx.measureText(percentText).width;
-
-          // Position text near the right edge inside the progress bar
+  
+          // Position text appropriately
           const textPadding = 8;
-          const textPosition = Math.max(
-            // Either position it inside the filled portion (if there's room)
-            barLeft + Math.max(fillWidth - percentWidth - textPadding, 0),
-            // Or position it at the left edge of the bar with minimal padding
-            barLeft + textPadding
+          const textPosition = barLeft + Math.min(
+            Math.max(fillWidth - percentWidth - textPadding, 0),
+            barWidth - percentWidth - textPadding
           );
-
-          // Draw percentage text - always inside the bar
-          ctx.fillStyle = (percentage < 15) ? '#1e293b' : 'white'; // Dark text for very small percentages
+  
+          // Draw percentage text
+          ctx.fillStyle = (fillWidth < percentWidth + textPadding * 2) ? '#1e293b' : 'white';
           ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           ctx.fillText(percentText, textPosition, y + barHeight / 2);
-
-          // Draw limit value on right side (separate from the bar)
+  
+          // Draw limit value on right side
           if (item.limit !== undefined) {
-            // Format limit value with appropriate notation
             let formattedLimit;
-            if (item.limit >= 1000000000) {
-              formattedLimit = item.label === 'WBTC' ? '∞' : `${(item.limit / 1000000000).toFixed(1)}B`;
+            
+            // Format limit value appropriately
+            if (item.limit === Infinity || item.limit === '∞' || item.limit > 1e12) {
+              formattedLimit = '∞';
+            } else if (item.limit >= 1000000000) {
+              formattedLimit = `${(item.limit / 1000000000).toFixed(1)}B`;
             } else if (item.limit >= 1000000) {
               formattedLimit = `${(item.limit / 1000000).toFixed(1)}M`;
             } else if (item.limit >= 1000) {
@@ -135,12 +128,12 @@ export default class ProgressChart {
               formattedLimit = item.limit.toLocaleString();
             }
             
-            // Draw limit text with proper spacing from the bar's right edge
+            // Draw limit text
             ctx.fillStyle = '#64748b';
             ctx.font = '400 13px "Inter", "Segoe UI", sans-serif';
-            ctx.textAlign = 'left'; // Changed to left alignment
+            ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(formattedLimit, barLeft + barWidth + 20, y + barHeight / 2); // Position it consistently to the right
+            ctx.fillText(formattedLimit, barLeft + barWidth + 20, y + barHeight / 2);
           }
         });
       }
@@ -175,13 +168,38 @@ export default class ProgressChart {
     document.getElementById(canvasId).style.height = `${canvasHeight}px`;
     
     // Create chart with our custom plugin
-    return new Chart(document.getElementById(canvasId).getContext('2d'), {
+    const chart = new Chart(document.getElementById(canvasId).getContext('2d'), {
       type: 'bar',
       data: emptyData,
       options: options,
       plugins: [multiProgressPlugin]
     });
+    
+    return chart;
   }
+  
+  
+  /**
+   * Create a progress bar (single)
+   * @param {string} canvasId - Canvas element ID
+   * @param {number} percentage - Percentage value (0-100)
+   * @param {Object} config - Chart configuration
+   * @returns {Chart} - Chart.js instance
+   */
+  static create(canvasId, percentage, config = {}) {
+    // For a single bar, reuse the multiple implementation with an array of one item
+    return this.createMultiple(canvasId, [{
+      percentage: percentage,
+      label: config.subtitle,
+      limit: config.limit,
+      value: config.value
+    }], { 
+      title: config.title,
+      drawTitleOnCanvas: config.drawTitleOnCanvas 
+    });
+  }
+  
+  
   
   /**
    * Create a progress bar (single)
