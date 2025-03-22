@@ -1,6 +1,9 @@
 // src/js/utils/reportChartManager.js
 import ChartExportUtils from './chartExportUtils.js';
 import ChartRegistry from '../charts/chartRegistry.js';
+import ChartFactory from '../charts/chartFactory.js';
+// Add import for SankeyChartUtils
+import SankeyChartUtils from './sankeyChartUtils.js';
 
 /**
  * ReportChartManager - Unified utility for creating exportable charts across all sections
@@ -106,11 +109,47 @@ export default class ReportChartManager {
           margin: 30px 0 15px 0;
           color: #1e293b;
         }
+
+        .report-section-subtitle {
+          font-size: 18px;
+          font-weight: 600;
+          margin: 25px 0 10px 0;
+          color: #1e293b;
+        }
+        
+        /* Sankey diagram styles */
+        .sankey-chart-container {
+          position: relative;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          padding: 20px;
+          margin: 20px 0;
+        }
+        
+        .sankey-tooltip {
+          position: absolute;
+          background-color: white;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          padding: 8px;
+          pointer-events: none;
+          font-size: 12px;
+          z-index: 1000;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
         
         @media print {
           .chart-export-btn, .export-all-btn {
             display: none !important;
           }
+        }
+        
+        /* For export mode */
+        .exporting .chart-export-btn,
+        .exporting .sankey-tooltip,
+        .exporting .export-all-btn {
+          display: none !important;
         }
       `;
       document.head.appendChild(style);
@@ -234,28 +273,112 @@ export default class ReportChartManager {
     
     return chartContainer;
   }
-  
-  // Update the chart rendering functions to NOT include a title in the chart options
-  // For example, in createCollateralCharts:
-  
-  static createCollateralCharts(containerId, networkData) {
-    if (!networkData || !networkData.economic_security) return;
+
+  /**
+   * Create charts for Operators section with Sankey diagram
+   * @param {string} containerId - Container element ID
+   * @param {Object} networkData - Network data
+   */
+  static createOperatorsCharts(containerId, networkData) {
+    if (!networkData || !networkData.operators) return;
     
+    // Ensure styles are injected
+    this.injectStyles();
+    
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Clear existing content
+    container.innerHTML = '';
+    
+    // Add section title
+    const titleElement = document.createElement('h2');
+    titleElement.className = 'report-section-title';
+    titleElement.textContent = 'Operators';
+    container.appendChild(titleElement);
+    
+    // Add export all button
+    const exportAllBtn = document.createElement('button');
+    exportAllBtn.className = 'export-all-btn';
+    exportAllBtn.textContent = 'Export All Charts';
+    exportAllBtn.addEventListener('click', () => {
+      // Get all chart elements in this container
+      const chartElements = container.querySelectorAll('[id^="operators-"]');
+      const sankeyContainer = document.getElementById('operator-sankey-container');
+      
+      // Disable button during export
+      exportAllBtn.textContent = 'Exporting...';
+      exportAllBtn.disabled = true;
+      
+      // Export each chart with delay
+      chartElements.forEach((chartElement, index) => {
+        setTimeout(() => {
+          ChartExportUtils.exportChart(chartElement.id, `operator-chart-${index + 1}`);
+        }, index * 500);
+      });
+      
+      // Export Sankey diagram
+      setTimeout(() => {
+        if (sankeyContainer) {
+          SankeyChartUtils.exportSankeyAsPNG('operator-sankey-container');
+        }
+        
+        // Reset button after all exports
+        setTimeout(() => {
+          exportAllBtn.textContent = 'Export All Charts';
+          exportAllBtn.disabled = false;
+        }, 500);
+      }, chartElements.length * 500);
+    });
+    container.appendChild(exportAllBtn);
+    
+    // Create standard charts section
     const chartConfigs = [
       {
-        canvasId: 'collateral-distribution-chart',
-        title: 'Collateral Distribution',
-        filename: 'collateral-distribution',
+        canvasId: 'operators-stake-distribution-chart',
+        title: 'Operator Stake Distribution',
+        filename: 'operator-stake-distribution',
         chartType: 'pie',
         renderer: (canvasId, data) => {
           import('../charts/pieChart.js').then(module => {
             const PieChart = module.default;
             
-            // Create the chart WITHOUT title parameter
-            const chart = PieChart.create(canvasId, data.economic_security.collateral_distribution, {
-              labelKey: 'collateral_symbol',
+            // Extract operators data
+            const operatorData = data.operators.stake_distribution;
+            
+            // Sort by stake in descending order
+            operatorData.sort((a, b) => b.total_usd_stake - a.total_usd_stake);
+            
+            // Take top 5 operators
+            const topOperators = operatorData.slice(0, 5);
+            const otherOperators = operatorData.slice(5);
+            
+            // Calculate total stake for "Others" category
+            const othersStake = otherOperators.reduce((sum, op) => sum + op.total_usd_stake, 0);
+            const totalStake = operatorData.reduce((sum, op) => sum + op.total_usd_stake, 0);
+            
+            // Prepare chart data
+            const chartData = [
+              ...topOperators.map(op => ({
+                label: op.label,
+                stake: op.total_usd_stake,
+                percentage: (op.total_usd_stake / totalStake) * 100
+              }))
+            ];
+            
+            // Add "Others" category if there are more than 5 operators
+            if (otherOperators.length > 0) {
+              chartData.push({
+                label: 'Others',
+                stake: othersStake,
+                percentage: (othersStake / totalStake) * 100
+              });
+            }
+            
+            // Create the chart
+            const chart = PieChart.create(canvasId, chartData, {
+              labelKey: 'label',
               valueKey: 'percentage'
-              // No title parameter here!
             });
             
             // Register for export
@@ -264,61 +387,217 @@ export default class ReportChartManager {
         }
       },
       {
-        canvasId: 'collateral-utilization-chart',
-        title: 'Collateral Utilization',
-        filename: 'collateral-utilization',
-        chartType: 'progress',
+        canvasId: 'vaults-per-operator-chart',
+        title: 'Vaults & Collateral Types per Operator',
+        filename: 'operator-metrics',
+        chartType: 'bar',
         renderer: (canvasId, data) => {
-          import('../charts/ProgressChart.js').then(module => {
-            const ProgressChart = module.default;
-            
-            // Prepare data for progress bars
-            const collateralData = data.economic_security.by_collateral.map(collateral => ({
-              label: collateral.collateral_symbol,
-              percentage: collateral.utilization_percent,
-              value: collateral.stake,
-              limit: collateral.limit
-            }));
-            
-            // Create the chart WITHOUT title parameter
-            const chart = ProgressChart.createMultiple(canvasId, collateralData, {
-              // No title parameter here!
-            });
-            
-            // Register for export
-            ChartExportUtils.registerChart(canvasId, chart);
+          // Extract operator data
+          const operatorData = data.operators?.stake_distribution || [];
+          const operatorDetails = data.operators?.operator_details || [];
+          
+          // Calculate vaults per operator and collateral diversity
+          const operatorMetrics = {};
+          
+          // Initialize metrics for all operators
+          operatorDetails.forEach(op => {
+            operatorMetrics[op.operator_id] = {
+              id: op.operator_id,
+              label: op.label || 'Unknown',
+              vaultCount: 0,
+              collateralTypes: new Set()
+            };
           });
-        }
-      }
-      // ... other chart configs
-    ];
-    
-    // Create the layout
-    const container = this.createReportChartLayout(containerId, chartConfigs, 'Collateral');
-    
-    // Render each chart
-    chartConfigs.forEach(config => {
-      config.renderer(config.canvasId, networkData);
-    });
-  }  
+          
+          // Get the vault-operator mapping
+          const vaultOperatorMapping = data.vault_operator_correlations?.mapping || {};
+          
+          // Get collateral info from economic_security data
+          const collateralData = data.economic_security?.by_collateral || [];
+          
+          // Create a lookup map for vault to collateral
+          const vaultCollateralMap = {};
+          collateralData.forEach(collateral => {
+            const collateralSymbol = collateral.collateral_symbol;
+            (collateral.vaults || []).forEach(vault => {
+              vaultCollateralMap[vault.vault_id] = collateralSymbol;
+            });
+          });
+          
+          // Count vaults for each operator and track collateral types
+          // ONLY COUNT VAULTS ONCE
+          Object.entries(vaultOperatorMapping).forEach(([vaultId, vaultInfo]) => {
+            const operators = vaultInfo.operators || {};
+            const collateralSymbol = vaultCollateralMap[vaultId];
+            
+            // Each operator managing this vault gets a count increment
+            Object.keys(operators).forEach(operatorId => {
+              if (operatorMetrics[operatorId]) {
+                // Count the vault
+                operatorMetrics[operatorId].vaultCount++;
+                
+                // Track the collateral type if we have that info
+                if (collateralSymbol) {
+                  operatorMetrics[operatorId].collateralTypes.add(collateralSymbol);
+                }
+              }
+            });
+          });
+          
+          // Convert to array and sort by vault count
+          const metricsArray = Object.values(operatorMetrics)
+            .filter(op => op.vaultCount > 0 || op.collateralTypes.size > 0)
+            .map(op => ({
+              ...op,
+              collateralCount: op.collateralTypes.size
+            }))
+            .sort((a, b) => b.vaultCount - a.vaultCount);
+          
+          // Take top 5 operators
+          const topOperators = metricsArray.slice(0, 5);
+          const otherOperators = metricsArray.slice(5);
+          
+          // Calculate means for others - only include non-zero values
+          let othersVaultMean = 1; // Default to 1 if there are no "other" operators
+          let othersCollateralMean = 1;
+          
+          if (otherOperators.length > 0) {
+            // Only include operators with non-zero vaults in the mean calculation
+            const nonZeroVaultOperators = otherOperators.filter(op => op.vaultCount > 0);
+            othersVaultMean = nonZeroVaultOperators.length > 0 
+              ? Math.ceil(nonZeroVaultOperators.reduce((sum, op) => sum + op.vaultCount, 0) / nonZeroVaultOperators.length)
+              : 1;
+            
+            // Same for collateral types
+            const nonZeroCollateralOperators = otherOperators.filter(op => op.collateralCount > 0);
+            othersCollateralMean = nonZeroCollateralOperators.length > 0
+              ? Math.ceil(nonZeroCollateralOperators.reduce((sum, op) => sum + op.collateralCount, 0) / nonZeroCollateralOperators.length)
+              : 1;
+          }
+          
+          // Ensure we have at least 1 for the mean values
+          othersVaultMean = Math.max(1, othersVaultMean);
+          othersCollateralMean = Math.max(1, othersCollateralMean);
+          
+          // Prepare data for chart
+          const chartLabels = [
+            ...topOperators.map(op => op.label),
+            ...(otherOperators.length > 0 ? ['Others (mean)'] : [])
+          ];
+          
+          const vaultCounts = [
+            ...topOperators.map(op => op.vaultCount),
+            ...(otherOperators.length > 0 ? [othersVaultMean] : [])
+          ];
+          
+          const collateralCounts = [
+            ...topOperators.map(op => op.collateralCount),
+            ...(otherOperators.length > 0 ? [othersCollateralMean] : [])
+          ];
+          
+          // Find the maximum value to set an appropriate y-axis scale
+          const maxValue = Math.max(
+            ...vaultCounts,
+            ...collateralCounts
+          );
+          
+          // Calculate a clean max value for the y-axis (round up to next multiple of 2)
+          const yAxisMax = Math.ceil(maxValue / 2) * 2;
+          
+          const container = document.getElementById(canvasId).parentElement;
+          if (container) {
+            container.style.minWidth = '600px';
+            container.style.maxWidth = '750px';
+            container.style.height = '400px';
+          }
 
-  /**
-   * Create charts for Operators section
-   * @param {string} containerId - Container element ID
-   * @param {Object} networkData - Network data
-   */
-  static createOperatorsCharts(containerId, networkData) {
-    if (!networkData || !networkData.operators) return;
-    
-    const chartConfigs = [
+          // Create chart
+          const ctx = document.getElementById(canvasId).getContext('2d');
+          
+          const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: chartLabels,
+              datasets: [
+                {
+                  label: 'Vaults',
+                  data: vaultCounts,
+                  backgroundColor: ChartFactory.brandColors.primary.purple,
+                  borderWidth: 0,
+                  borderRadius: 6,
+                  maxBarThickness: 30
+                },
+                {
+                  label: 'Collateral Types',
+                  data: collateralCounts,
+                  backgroundColor: ChartFactory.brandColors.primary.blue,
+                  borderWidth: 0,
+                  borderRadius: 6,
+                  maxBarThickness: 30
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: false
+                },
+                legend: {
+                  position: 'top'
+                }
+              },
+              scales: {
+                x: {
+                  grid: {
+                    display: false
+                  },
+                  ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
+                  }
+                },
+                y: {
+                  type: 'linear',
+                  display: true,
+                  title: {
+                    display: true,
+                    text: 'Count',
+                    font: {
+                      size: 12
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(226, 232, 240, 0.6)'
+                  },
+                  beginAtZero: true,
+                  max: yAxisMax, // Set the maximum value for the y-axis
+                  ticks: {
+                    precision: 0, // Show only integer values
+                    stepSize: 1
+                  }
+                }
+              },
+              // Ensure bars are grouped side by side
+              barPercentage: 0.8,
+              categoryPercentage: 0.8
+            }
+          });
+          
+          // Register for export
+          ChartExportUtils.registerChart(canvasId, chart);
+        }
+      },
       {
         canvasId: 'operators-distribution-chart',
         title: 'Operator Distribution',
         filename: 'operator-distribution',
+        chartType: 'pie',
         renderer: (canvasId, data) => {
           // Import required charts dynamically
-          import('../charts/barChart.js').then(module => {
-            const BarChart = module.default;
+          import('../charts/pieChart.js').then(module => {
+            const PieChart = module.default;
             
             // Prepare data
             const operatorData = data.operators.stake_distribution;
@@ -329,11 +608,29 @@ export default class ReportChartManager {
             // Take top 8 operators
             const topOperators = operatorData.slice(0, 8);
             
+            // Calculate total stake for top operators
+            const topStake = topOperators.reduce((sum, op) => sum + op.total_usd_stake, 0);
+            const totalStake = operatorData.reduce((sum, op) => sum + op.total_usd_stake, 0);
+            
+            // Add "Others" category if needed
+            const pieData = [...topOperators];
+            if (topStake < totalStake) {
+              pieData.push({
+                label: 'Others',
+                total_usd_stake: totalStake - topStake
+              });
+            }
+            
+            // Calculate percentages
+            pieData.forEach(item => {
+              item.percentage = ((item.total_usd_stake / totalStake) * 100).toFixed(1);
+            });
+            
             // Create the chart
-            const chart = BarChart.createHorizontal(canvasId, topOperators, {
+            const chart = PieChart.create(canvasId, pieData, {
               labelKey: 'label',
-              valueKey: 'total_usd_stake',
-              title: 'USD Stake by Operator'
+              valueKey: 'percentage',
+              title: 'Stake Distribution by Operator'
             });
             
             // Register for export
@@ -342,25 +639,41 @@ export default class ReportChartManager {
         }
       },
       {
-        canvasId: 'operator-concentration-chart',
-        title: 'Operator Concentration',
+        canvasId: 'operators-concentration-chart',
+        title: 'Stake Concentration',
         filename: 'operator-concentration',
+        chartType: 'bar',
         renderer: (canvasId, data) => {
-          import('../charts/pieChart.js').then(module => {
-            const PieChart = module.default;
+          import('../charts/barChart.js').then(module => {
+            const BarChart = module.default;
             
-            // Transform concentration data for pie chart
+            // Extract concentration data
             const concentration = data.operators.concentration;
-            const pieData = [
-              { label: 'Top 3 Operators', percentage: concentration.top_3.percentage },
-              { label: 'Top 5 Operators', percentage: concentration.top_5.percentage },
+            
+            // Create data for bar chart
+            const concentrationData = [
+              { 
+                category: 'Top 3 Operators', 
+                percentage: concentration.top_3.percentage,
+                usd_value: concentration.top_3.usd_stake
+              },
+              { 
+                category: 'Top 5 Operators', 
+                percentage: concentration.top_5.percentage,
+                usd_value: concentration.top_5.usd_stake
+              },
+              { 
+                category: 'Others', 
+                percentage: 100 - concentration.top_5.percentage,
+                usd_value: data.economic_security.total_usd_stake - concentration.top_5.usd_stake
+              }
             ];
             
             // Create the chart
-            const chart = PieChart.create(canvasId, pieData, {
-              labelKey: 'label',
+            const chart = BarChart.createHorizontal(canvasId, concentrationData, {
+              labelKey: 'category',
               valueKey: 'percentage',
-              title: 'Stake Concentration'
+              title: 'Operator Concentration (%)'
             });
             
             // Register for export
@@ -370,13 +683,69 @@ export default class ReportChartManager {
       }
     ];
     
-    // Create the layout
-    const container = this.createReportChartLayout(containerId, chartConfigs, 'Operators');
+    // Create basic charts container
+    const chartContainer = document.createElement('div');
+    chartContainer.className = 'report-chart-container';
+    container.appendChild(chartContainer);
     
-    // Render each chart
+    // Create and render basic charts
     chartConfigs.forEach(config => {
+      const chartCard = document.createElement('div');
+      chartCard.className = `report-chart-card ${config.chartType || ''}-chart`;
+      
+      const chartTitle = document.createElement('div');
+      chartTitle.className = 'report-chart-title';
+      chartTitle.textContent = config.title;
+      chartCard.appendChild(chartTitle);
+      
+      const canvas = document.createElement('canvas');
+      canvas.id = config.canvasId;
+      chartCard.appendChild(canvas);
+      
+      // Add export button
+      const exportBtn = document.createElement('button');
+      exportBtn.className = 'chart-export-btn';
+      exportBtn.textContent = 'Export';
+      exportBtn.addEventListener('click', () => {
+        ChartExportUtils.exportChart(config.canvasId, config.filename || config.title);
+      });
+      chartCard.appendChild(exportBtn);
+      
+      chartContainer.appendChild(chartCard);
+      
+      // Render chart
       config.renderer(config.canvasId, networkData);
     });
+    
+    // Add subtitle for Sankey diagram
+    const sankeyTitle = document.createElement('h3');
+    sankeyTitle.className = 'report-section-subtitle';
+    sankeyTitle.textContent = 'Economic Security Allocation by Operators';
+    sankeyTitle.style.marginTop = '40px';
+    sankeyTitle.style.marginBottom = '15px';
+    container.appendChild(sankeyTitle);
+    
+    // Add description for Sankey diagram
+    const sankeyDescription = document.createElement('p');
+    sankeyDescription.className = 'report-chart-description';
+    sankeyDescription.textContent = 'This diagram shows how economic security is allocated from operators to different collateral types. The width of each flow represents the amount of stake.';
+    sankeyDescription.style.marginBottom = '20px';
+    sankeyDescription.style.color = '#64748b';
+    container.appendChild(sankeyDescription);
+    
+    // Create Sankey diagram container
+    const sankeyContainer = document.createElement('div');
+    sankeyContainer.id = 'operator-sankey-container';
+    sankeyContainer.className = 'sankey-chart-container';
+    sankeyContainer.style.height = '600px';
+    sankeyContainer.style.position = 'relative';
+    sankeyContainer.style.marginBottom = '40px';
+    container.appendChild(sankeyContainer);
+    
+    // Create Sankey diagram
+    SankeyChartUtils.createOperatorCollateralSankey('operator-sankey-container', networkData);
+    
+    return container;
   }
 
   /**
@@ -518,6 +887,210 @@ export default class ReportChartManager {
     if (!networkData || !networkData.vault_configuration) return;
     
     const chartConfigs = [
+      {
+        canvasId: 'curator-metrics-chart',
+        title: 'Vaults and Collateral Types per Curator',
+        filename: 'curator-metrics',
+        chartType: 'bar',
+        renderer: (canvasId, data) => {
+          // Extract curator data
+          const curatorStats = data.vault_configuration.curator_stats || {};
+          
+          // Process curator data
+          const curatorsData = Object.entries(curatorStats).map(([name, stats]) => {
+            // Count unique collaterals
+            const collateralCount = Object.keys(stats.collaterals || {}).length;
+            
+            return {
+              name: name.replace(/_/g, ' '), // Replace underscores with spaces
+              vaults: stats.vaults_count || 0,
+              collaterals: collateralCount
+            };
+          });
+          
+          // Sort by vault count (descending)
+          curatorsData.sort((a, b) => b.vaults - a.vaults);
+          
+          // Extract data for chart
+          const labels = curatorsData.map(c => c.name);
+          const vaultCounts = curatorsData.map(c => c.vaults);
+          const collateralCounts = curatorsData.map(c => c.collaterals);
+          
+          // Create chart
+          const ctx = document.getElementById(canvasId).getContext('2d');
+          const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Vaults',
+                  data: vaultCounts,
+                  backgroundColor: ChartFactory.brandColors.primary.purple,
+                  borderWidth: 0,
+                  borderRadius: 6,
+                  order: 1
+                },
+                {
+                  label: 'Collateral Types',
+                  data: collateralCounts,
+                  backgroundColor: ChartFactory.brandColors.primary.blue,
+                  borderWidth: 0,
+                  borderRadius: 6,
+                  order: 0,
+                  yAxisID: 'y1'
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: false
+                },
+                legend: {
+                  position: 'top'
+                }
+              },
+              scales: {
+                x: {
+                  grid: {
+                    display: false
+                  },
+                  ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
+                  }
+                },
+                y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  title: {
+                    display: true,
+                    text: 'Number of Vaults'
+                  },
+                  grid: {
+                    color: 'rgba(226, 232, 240, 0.6)'
+                  }
+                },
+                y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+                  title: {
+                    display: true,
+                    text: 'Collateral Diversity'
+                  },
+                  grid: {
+                    drawOnChartArea: false
+                  }
+                }
+              }
+            }
+          });
+          
+          // Register for export
+          ChartExportUtils.registerChart(canvasId, chart);
+        }
+      },
+      {
+        canvasId: 'curator-stake-chart',
+        title: 'Stake Distribution by Curator',
+        filename: 'curator-stake-distribution',
+        chartType: 'pie',
+        renderer: (canvasId, data) => {
+          import('../charts/pieChart.js').then(module => {
+            const PieChart = module.default;
+            
+            const curatorsStats = data.vault_configuration.curator_stats || {};
+            const economicSecurity = data.economic_security || {};
+            const totalNetworkStake = economicSecurity.total_usd_stake || 0;
+            
+            // Calculate stake for each curator
+            const curatorStakes = [];
+            let unknownStake = 0;
+            
+            // First get all vaults to check for unmapped vaults
+            const allVaults = new Set();
+            const mappedVaults = new Set();
+            
+            // Collect all vaults from collateral data
+            (economicSecurity.by_collateral || []).forEach(collateral => {
+              (collateral.vaults || []).forEach(vault => {
+                allVaults.add(vault.vault_id);
+              });
+            });
+            
+            // Calculate stake for each curator and track mapped vaults
+            Object.entries(curatorsStats).forEach(([name, stats]) => {
+              let curatorUsdStake = 0;
+              
+              // Process each vault under this curator
+              (stats.vaults || []).forEach(vault => {
+                mappedVaults.add(vault.vault_id);
+                
+                // Find vault in economic security data to get USD stake
+                (economicSecurity.by_collateral || []).forEach(collateral => {
+                  const matchingVault = (collateral.vaults || []).find(v => 
+                    v.vault_id === vault.vault_id
+                  );
+                  
+                  if (matchingVault) {
+                    curatorUsdStake += matchingVault.usd_stake || 0;
+                  }
+                });
+              });
+              
+              // Add to curator stakes array
+              curatorStakes.push({
+                name: name.replace(/_/g, ' '),
+                usdStake: curatorUsdStake,
+                percentage: (curatorUsdStake / totalNetworkStake) * 100
+              });
+            });
+            
+            // Find unmapped vaults and calculate their stake
+            const unmappedVaults = [...allVaults].filter(vaultId => !mappedVaults.has(vaultId));
+            
+            if (unmappedVaults.length > 0) {
+              unmappedVaults.forEach(vaultId => {
+                (economicSecurity.by_collateral || []).forEach(collateral => {
+                  const matchingVault = (collateral.vaults || []).find(v => 
+                    v.vault_id === vaultId
+                  );
+                  
+                  if (matchingVault) {
+                    unknownStake += matchingVault.usd_stake || 0;
+                  }
+                });
+              });
+              
+              // Add unknown curator if there are unmapped vaults
+              if (unknownStake > 0) {
+                curatorStakes.push({
+                  name: 'Unknown',
+                  usdStake: unknownStake,
+                  percentage: (unknownStake / totalNetworkStake) * 100
+                });
+              }
+            }
+            
+            // Sort by stake percentage (descending)
+            curatorStakes.sort((a, b) => b.percentage - a.percentage);
+            
+            // Create the chart
+            const chart = PieChart.create(canvasId, curatorStakes, {
+              labelKey: 'name',
+              valueKey: 'percentage'
+            });
+            
+            // Register for export
+            ChartExportUtils.registerChart(canvasId, chart);
+          });
+        }
+      },     
       {
         canvasId: 'curator-distribution-chart',
         title: 'Curator Distribution',

@@ -2,7 +2,7 @@
   "network": {
     "id": "0x8560C667Ae72F28D09465B342A480daB28821f6b",
     "name": "Ditto Network",
-    "analysis_timestamp": 1742492415
+    "analysis_timestamp": 1742600358
   },
   "economic_security": {
     "total_usd_stake": 237087341.97147262,
@@ -71,7 +71,6 @@
     "by_collateral": [
       {
         "collateral_symbol": "wstETH",
-        "underlying_asset": "ETH",
         "stake": 73783.14626719872,
         "usd_stake": 180043771.00320855,
         "limit": 143239.0,
@@ -171,7 +170,6 @@
       },
       {
         "collateral_symbol": "WBTC",
-        "underlying_asset": "BTC",
         "stake": 157.19409039,
         "usd_stake": 13530564.634809807,
         "limit": 19100000000000.01,
@@ -201,7 +199,6 @@
       },
       {
         "collateral_symbol": "swETH",
-        "underlying_asset": "ETH",
         "stake": 2542.232604600365,
         "usd_stake": 5696147.236084465,
         "limit": 56044.0,
@@ -221,7 +218,6 @@
       },
       {
         "collateral_symbol": "cbETH",
-        "underlying_asset": "ETH",
         "stake": 2281.365105882261,
         "usd_stake": 5070401.7007499775,
         "limit": 55128.0,
@@ -241,7 +237,6 @@
       },
       {
         "collateral_symbol": "wBETH",
-        "underlying_asset": "ETH",
         "stake": 1128.4116295129063,
         "usd_stake": 2266554.776431418,
         "limit": 56499.0,
@@ -261,7 +256,6 @@
       },
       {
         "collateral_symbol": "rETH",
-        "underlying_asset": "ETH",
         "stake": 753.044752082196,
         "usd_stake": 1730016.9655411758,
         "limit": 59857.0,
@@ -281,7 +275,6 @@
       },
       {
         "collateral_symbol": "osETH",
-        "underlying_asset": "ETH",
         "stake": 1006.2021029827075,
         "usd_stake": 2236314.056486242,
         "limit": 3000.0,
@@ -301,7 +294,6 @@
       },
       {
         "collateral_symbol": "LBTC",
-        "underlying_asset": "BTC",
         "stake": 249.99999999,
         "usd_stake": 21518882.485815987,
         "limit": 250.0,
@@ -321,7 +313,6 @@
       },
       {
         "collateral_symbol": "lvlwaUSDC",
-        "underlying_asset": "USD",
         "stake": 4000000.0,
         "usd_stake": 3995657.6160971522,
         "limit": 4000000.0,
@@ -341,7 +332,6 @@
       },
       {
         "collateral_symbol": "lvlwaUSDT",
-        "underlying_asset": "USD",
         "stake": 1000000.0,
         "usd_stake": 999031.4962478379,
         "limit": 1000000.0,
@@ -689,38 +679,6 @@
     "participation_rate": 9.38,
     "operator_details": [
       {
-        "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
-        "label": "Everstake"
-      },
-      {
-        "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
-        "label": "Luganodes"
-      },
-      {
-        "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
-        "label": "Nodeinfra"
-      },
-      {
-        "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
-        "label": "Chorus One"
-      },
-      {
-        "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
-        "label": "cp0x by STAKR.space"
-      },
-      {
-        "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
-        "label": "P2P.org"
-      },
-      {
-        "operator_id": "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5",
-        "label": "Stakely"
-      },
-      {
-        "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
-        "label": "Kiln"
-      },
-      {
         "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
         "label": "blockscape"
       },
@@ -729,12 +687,44 @@
         "label": "Stakin"
       },
       {
+        "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+        "label": "cp0x by STAKR.space"
+      },
+      {
+        "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+        "label": "Everstake"
+      },
+      {
+        "operator_id": "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5",
+        "label": "Stakely"
+      },
+      {
         "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
         "label": "Pier Two"
       },
       {
+        "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+        "label": "Kiln"
+      },
+      {
+        "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+        "label": "Nodeinfra"
+      },
+      {
         "operator_id": "0x2A21EaAe1519D852296a158549416442fbb1fdD2",
         "label": "Finoa Consensus Services"
+      },
+      {
+        "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+        "label": "Luganodes"
+      },
+      {
+        "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+        "label": "Chorus One"
+      },
+      {
+        "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+        "label": "P2P.org"
       }
     ],
     "stake_distribution": [
@@ -951,6 +941,17 @@
         "total_usd_stake": 1570901.7866685137
       },
       {
+        "operator_id": "0x5d24dBA4ccdE2C5B7bC5b609c6a3D5150acB9447",
+        "label": "Stakin",
+        "stakes_by_collateral": {
+          "WBTC": {
+            "stake": 17.46477671,
+            "usd_stake": 1503289.9107141555
+          }
+        },
+        "total_usd_stake": 1503289.9107141555
+      },
+      {
         "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
         "label": "Everstake",
         "stakes_by_collateral": {
@@ -964,17 +965,6 @@
       {
         "operator_id": "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5",
         "label": "Stakely",
-        "stakes_by_collateral": {
-          "WBTC": {
-            "stake": 17.46477671,
-            "usd_stake": 1503289.9107141555
-          }
-        },
-        "total_usd_stake": 1503289.9107141555
-      },
-      {
-        "operator_id": "0x5d24dBA4ccdE2C5B7bC5b609c6a3D5150acB9447",
-        "label": "Stakin",
         "stakes_by_collateral": {
           "WBTC": {
             "stake": 17.46477671,
@@ -1015,6 +1005,188 @@
         "usd_stake": 79199093.5636904,
         "percentage": 33.41,
         "operator_count": 1
+      }
+    }
+  },
+  "vault_operator_correlations": {
+    "summary": {
+      "total_correlations": 62,
+      "avg_operators_per_vault": 3.26,
+      "avg_vaults_per_operator": 5.17,
+      "max_operators_in_single_vault": 9,
+      "max_vaults_for_single_operator": 13
+    },
+    "distribution": {
+      "operator_distribution": {
+        "vaults_with_1_operator": 7,
+        "vaults_with_2_5_operators": 11,
+        "vaults_with_6_10_operators": 1,
+        "vaults_with_more_than_10_operators": 0
+      },
+      "vault_distribution": {
+        "operators_in_1_vault": 5,
+        "operators_in_2_5_vaults": 2,
+        "operators_in_6_10_vaults": 3,
+        "operators_in_more_than_10_vaults": 2
+      }
+    },
+    "mapping": {
+      "0xa88e91cEF50b792f9449e2D4C699b6B3CcE1D19F": {
+        "vault_label": "Renzo Restaked LST",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two"
+        }
+      },
+      "0x7b276aAD6D2ebfD7e270C5a2697ac79182D9550E": {
+        "vault_label": "Restaking Vault ETH [all Networks]",
+        "operators": {
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x446970400e1787814CA050A4b45AE9d21B3f7EA7": {
+        "vault_label": "MEV Capital restaked ETH",
+        "operators": {
+          "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a": "Nodeinfra",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0xfd42c11Bf9518A078445b04857B205Fee688b133": "blockscape",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln"
+        }
+      },
+      "0x450a90fdEa8B87a6448Ca1C87c88Ff65676aC45b": {
+        "vault_label": "Ether.fi - wstETH",
+        "operators": {
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x9e405601B645d3484baeEcf17bBF7aD87680f6e8": {
+        "vault_label": "Gauntlet x Swell swBTC Vault",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0x6f64DeCffDE23AA598724325202f8324c231A682": "Everstake",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x2A21EaAe1519D852296a158549416442fbb1fdD2": "Finoa Consensus Services",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0x5d24dBA4ccdE2C5B7bC5b609c6a3D5150acB9447": "Stakin",
+          "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5": "Stakely",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0xf7Ce770AbdD1895f2CB0989D7cf2A26705FF37a7": {
+        "vault_label": "Steakhouse Resteaking Vault",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes"
+        }
+      },
+      "0x3D93b33f5E5fe74D54676720e70EA35210cdD46E": {
+        "vault_label": "Re7 Labs LRT Vault",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0xc10A7f0AC6E3944F4860eE97a937C51572e3a1Da": {
+        "vault_label": "Gauntlet Restaked wstETH",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x4e0554959A631B3D3938ffC158e0a7b2124aF9c5": {
+        "vault_label": "MEV Capital wstETH Vault",
+        "operators": {
+          "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a": "Nodeinfra",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0xfd42c11Bf9518A078445b04857B205Fee688b133": "blockscape",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln"
+        }
+      },
+      "0x65B560d887c010c4993C8F8B36E595C171d69D63": {
+        "vault_label": "Gauntlet Restaked swETH",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0xB8Fd82169a574eB97251bF43e443310D33FF056C": {
+        "vault_label": "Gauntlet Restaked cbETH",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x81bb35c4152B605574BAbD320f8EABE2871CE8C6": {
+        "vault_label": "Gauntlet Restaked wBETH",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0xaF07131C497E06361dc2F75de63dc1d3e113f7cb": {
+        "vault_label": "Gauntlet Restaked rETH",
+        "operators": {
+          "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819": "Luganodes",
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One",
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x82c304aa105fbbE2aA368A83D7F8945d41f6cA54": {
+        "vault_label": "cp0x LRT Conservative Vault",
+        "operators": {
+          "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0": "cp0x by STAKR.space"
+        }
+      },
+      "0x35E44d92E8F738A272Bddbae53d1Dc9490e75Fe7": {
+        "vault_label": "Vault 0x35e4...5fe7",
+        "operators": {
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x9ec7175541948494Db7831c95868DD97d2E0F742": {
+        "vault_label": "Vault 0x9ec7...f742",
+        "operators": {
+          "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0": "Chorus One"
+        }
+      },
+      "0xd4E20ECA1f996Dab35883dC0AD5E3428AF888D45": {
+        "vault_label": "Ether.fi - LBTC",
+        "operators": {
+          "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30": "Pier Two",
+          "0xfF645D02C79141424fb4F8bBB5e494f05067c08B": "Kiln",
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x67F91a36c5287709E68E3420cd17dd5B13c60D6d": {
+        "vault_label": "lvlwaUSDC",
+        "operators": {
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
+      },
+      "0x9BF93077Ad7BB7f43E177b6AbBf8Dae914761599": {
+        "vault_label": "lvlwaUSDT",
+        "operators": {
+          "0x087c25f83ED20bda587CFA035ED0c96338D4660f": "P2P.org"
+        }
       }
     }
   },

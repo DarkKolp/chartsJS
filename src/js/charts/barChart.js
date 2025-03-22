@@ -13,11 +13,21 @@ export default class BarChart {
    * @param {Object} config - Chart configuration
    * @returns {Chart} - Chart.js instance
    */
-  static createBasic(canvasId, data, { labelKey, valueKey, title }) {
-    const { labels, values } = DataTransformer.extractBasicData(data, { labelKey, valueKey });
+  static createBasic(canvasId, data, config = {}) {
+    // Fix: Use the config object directly without destructuring in the parameter
+    const { labelKey, valueKey, title, sort } = config;
+    
+    // Use the destructured variables for data extraction
+    const extractedData = DataTransformer.extractBasicData(data, { 
+      labelKey: labelKey || 'label', 
+      valueKey: valueKey || 'value' 
+    });
+    
+    const labels = extractedData.labels;
+    const values = extractedData.values;
     
     // Sort data by value in descending order if requested
-    if (config?.sort === 'desc') {
+    if (sort === 'desc') {
       const combined = labels.map((label, i) => ({ label, value: values[i] }));
       combined.sort((a, b) => b.value - a.value);
       
@@ -39,7 +49,7 @@ export default class BarChart {
     const chartData = {
       labels,
       datasets: [{
-        label: title || valueKey,
+        label: title || valueKey || 'Value',
         data: values,
         backgroundColor: gradient,
         borderColor: 'rgba(0, 0, 0, 0)', // Transparent border

@@ -8,6 +8,8 @@ import NetworkManager from './utils/networkManager.js';
 import ChartConfigManager from './utils/chartConfigManager.js';
 import ChartFactory from './charts/chartFactory.js';
 import ReportChartManager from './utils/reportChartManager.js';
+import SankeyChartUtils from './utils/sankeyChartUtils.js';
+
 
 // Global instances
 const networkManager = new NetworkManager();
