@@ -109,7 +109,31 @@
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  min-height: 350px;
+  min-height: 400px;
+  margin-bottom: 30px;
+}
+
+.chart-card canvas {
+  max-height: 350px;
+}
+
+.chart-card .chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+.chart-card .chartjs-legend {
+  display: none;
+}
+
+.charts-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 20px 0;
 }
 
 .chart-title {
@@ -158,20 +182,37 @@
   margin: 20px 0;
 }
 
-.chart-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  min-height: 350px;
-  display: flex;
-  flex-direction: column;
-}
 
 .canvas-container {
   position: relative;
   width: 100%;
-  height: 300px;
+  height: 350px;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.export-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.export-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.datalabels {
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
 .charts-grid {
@@ -181,19 +222,6 @@
   margin-top: 20px;
 }
 
-.chart-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
-.chart-title {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 18px;
-  font-weight: 600;
-}
 
 .chart-error {
   background-color: #fef2f2;
