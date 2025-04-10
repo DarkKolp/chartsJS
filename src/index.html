@@ -5,49 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Metrics Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Optional: Add Inter font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>Network Metrics Dashboard</h1>
-        <div class="dashboard-controls">
-            <select id="network-selector" class="network-selector">
-                <option value="">Select Network</option>
-            </select>
-            
-            <!-- Main category navigation -->
-            <div id="category-nav" class="category-nav">
-                <!-- Category buttons will be dynamically populated -->
-            </div>
-        </div>
-        
-        <!-- Sub-category/chart selector -->
-        <div id="chart-selector" class="chart-selector">
-            <!-- Chart type buttons will be dynamically populated -->
-        </div>
     </header>
     
-    <div id="network-info" class="network-info">
-        <!-- Network info will be displayed here -->
-    </div>
-    
-    <div id="chart-container">
-        <!-- Selected chart will be displayed here -->
-    </div>
+    <!-- Single container for app -->
+    <div id="app-container" class="app-container"></div>
     
     <!-- Import Chart.js -->
     <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
     <!-- Main application script (using ES modules) -->
     <script type="module" src="js/main.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
-    <script>
-        window.ChartDataLabels = ChartDataLabels;
-      </script>
 </body>
 </html>

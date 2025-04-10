@@ -37,16 +37,33 @@ export default class ChartRegistry {
      */
     static destroy(id) {
       if (this.registry.has(id)) {
-        this.registry.get(id).destroy();
+        try {
+          const chart = this.registry.get(id);
+          if (chart && typeof chart.destroy === 'function') {
+            chart.destroy();
+          }
+        } catch (e) {
+          console.warn(`Error destroying chart ${id}:`, e);
+        }
         this.registry.delete(id);
       }
     }
+    
   
     /**
      * Destroy all charts
      */
     static destroyAll() {
-      this.registry.forEach(chart => chart.destroy());
+      console.log("Destroying all charts");
+      this.registry.forEach((chart, id) => {
+        try {
+          if (chart && typeof chart.destroy === 'function') {
+            chart.destroy();
+          }
+        } catch (e) {
+          console.warn(`Error destroying chart ${id}:`, e);
+        }
+      });
       this.registry.clear();
-    }
+    } 
   }

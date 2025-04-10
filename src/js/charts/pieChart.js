@@ -15,11 +15,11 @@ export default class PieChart {
    * @param {Object} config - Chart configuration
    * @returns {Chart} - Chart.js instance
    */
-  static create(canvasId, data, { labelKey, valueKey, title }) {
+  static create(canvasId, data, config = {}) {
     // Extract data
     let { labels, values } = DataTransformer.extractBasicData(data, { 
-      labelKey: labelKey || 'label', 
-      valueKey: valueKey || 'value' 
+      labelKey: config.labelKey || 'label', 
+      valueKey: config.valueKey || 'value' 
     });
     
     // Calculate percentages of total
@@ -74,7 +74,7 @@ export default class PieChart {
     const chartData = {
       labels: labels.map(l => l || 'Unknown'),
       datasets: [{
-        label: title || valueKey,
+        label: config.title || config.valueKey,
         data: values,
         backgroundColor: colorPalette.slice(0, labels.length),
         borderColor: '#ffffff',
@@ -83,7 +83,7 @@ export default class PieChart {
       }]
     };
     
-    // Configure options with internal labels
+    // Configure options with datalabels disabled
     const options = {
       maintainAspectRatio: false,
       cutout: '0%',
@@ -100,98 +100,63 @@ export default class PieChart {
         y: { display: false }
       },
       plugins: {
+        // Disable datalabels to prevent rendering issues
+        datalabels: {
+          display: false
+        },
         // Set legend to bottom with minimal display
         legend: {
-          display: false, // Disable legend since we're using internal labels
-          position: 'bottom',
+          display: true,
+          position: 'right',
           align: 'center',
           labels: {
-            usePointStyle: true,
-            pointStyle: 'circle',
-            boxWidth: 8,
-            boxHeight: 8,
+            boxWidth: 12,
             padding: 15,
             font: {
-              family: "'Inter', 'Segoe UI', sans-serif",
-              size: 12,
-              weight: '500'
-            },
-            color: '#1E293B'
+              size: 11
+            }
           }
         },
         tooltip: {
-          // Keep existing tooltip
           callbacks: {
             label: function(context) {
               const label = context.label || 'Unknown';
               const value = context.raw;
               const percentage = ((parseFloat(value) / total) * 100).toFixed(1);
               
-              if (valueKey && (valueKey.toLowerCase().includes('usd') || 
-                  valueKey.toLowerCase().includes('stake'))) {
+              if (config.valueKey && (config.valueKey.toLowerCase().includes('usd') || 
+                  config.valueKey.toLowerCase().includes('stake'))) {
                 return `${label}: $${parseFloat(value).toLocaleString()} (${percentage}%)`;
               }
               
               return `${label}: ${parseFloat(value).toLocaleString()} (${percentage}%)`;
             }
           }
-        },
-        // Add datalabels plugin configuration for internal labels
-        datalabels: {
-          color: '#ffffff',
-          font: {
-            family: "'Inter', 'Segoe UI', sans-serif",
-            size: 12,
-            weight: 'bold'
-          },
-          textAlign: 'center',
-          textShadow: {
-            color: 'rgba(0, 0, 0, 0.5)',
-            offsetX: 1,
-            offsetY: 1,
-            blur: 3
-          },
-          anchor: 'center',
-          align: function(context) {
-            const angle = context.chart._metasets[context.datasetIndex].data[context.dataIndex].startAngle + 
-                         (context.chart._metasets[context.datasetIndex].data[context.dataIndex].endAngle - 
-                          context.chart._metasets[context.datasetIndex].data[context.dataIndex].startAngle) / 2;
-            return (angle < Math.PI / 2 || angle > Math.PI * 1.5) ? 'start' : 'end';
-          },
-          formatter: function(value, context) {
-            const percentage = ((value / context.dataset.data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
-            const label = context.chart.data.labels[context.dataIndex];
-            
-            // Different formats for different slice sizes
-            if (percentage < 8) return percentage + '%';
-            if (percentage < 15) return label.substring(0, 3) + '\n' + percentage + '%';
-            return label + '\n' + percentage + '%';
-          },        
-          display: function(context) {
-            // Calculate angle for this slice
-            const sum = context.dataset.data.reduce((a, b) => a + b, 0);
-            const value = context.dataset.data[context.dataIndex];
-            const percentValue = value / sum * 100;
-            
-            // Only display label if slice is large enough (prevents overlapping)
-            return percentValue >= 5;
-          }
         }
-      }
+      },
+      // Disable animations to prevent infinite rendering
+      animation: false
     };
     
     // Set up responsive sizing
     const canvas = document.getElementById(canvasId);
-    canvas.style.height = '300px';
+    if (canvas) {
+      canvas.style.height = '300px';
+    }
     
-    // Create chart with plugins
+    // Merge in any custom options
+    if (config.options) {
+      Object.assign(options, config.options);
+    }
+    
+    // Create chart without any plugins that could cause infinite rendering
     return new Chart(document.getElementById(canvasId).getContext('2d'), {
       type: 'pie',
       data: chartData,
-      options: options,
-      plugins: [ChartDataLabels] // Make sure ChartDataLabels is available
+      options: options
     });
   }
+  
   
   
   /**

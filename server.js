@@ -27,7 +27,7 @@ app.get('/api/networks', (req, res) => {
       const networkDir = path.join(dataDir, dir);
       if (fs.statSync(networkDir).isDirectory()) {
         // Find JSON files in each network directory
-        const files = fs.readdirSync(networkDir).filter(file => file.endsWith('_reportMetrics.json'));
+        const files = fs.readdirSync(networkDir).filter(file => file.endsWith('_lightReport.json'));
         
         files.forEach(file => {
           networks.push({
