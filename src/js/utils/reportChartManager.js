@@ -1172,6 +1172,129 @@ export default class ReportChartManager {
   }
 
   /**
+   * Creates Activity charts for a report
+   * @param {string} containerId - The ID of the container element
+   * @param {Object} networkData - The network data
+   */
+  static createActivityCharts(containerId, networkData) {
+    if (!networkData || !networkData.activity) return;
+
+    const chartConfigs = [
+      {
+        canvasId: 'activity-by-type-chart',
+        title: 'Total Number of Actions by Type',
+        filename: 'activity-by-type',
+        chartType: 'bar',
+        renderer: (canvasId, data) => {
+          import('../charts/barChart.js').then(module => {
+            const BarChart = module.default;
+
+            // Process activity by type data
+            const activityData = Object.entries(data.activity.by_type).map(([type, count]) => ({
+              type: type.replace(/_/g, ' '), // Replace underscores with spaces
+              count: count
+            }));
+
+            // Create the chart
+            const chart = BarChart.createBasic(canvasId, activityData, {
+              labelKey: 'type',
+              valueKey: 'count',
+              title: 'Total Actions by Type'
+            });
+
+            // Register for export
+            ChartExportUtils.registerChart(canvasId, chart);
+          });
+        }
+      },
+      {
+        canvasId: 'top-users-by-activity-chart',
+        title: 'Top 5 Most Active Users',
+        filename: 'top-users-activity',
+        chartType: 'bar',
+        renderer: (canvasId, data) => {
+          import('../charts/barChart.js').then(module => {
+            const BarChart = module.default;
+
+            // Get top 5 users by activity count
+            const topUsers = data.activity.by_user.slice(0, 5);
+            
+            // Map to chart format
+            const userData = topUsers.map(user => ({
+              user: user.user,
+              activityCount: user.activity_count
+            }));
+
+            // Create the chart
+            const chart = BarChart.createHorizontal(canvasId, userData, {
+              labelKey: 'user',
+              valueKey: 'activityCount',
+              title: 'Top 5 Most Active Users'
+            });
+
+            // Register for export
+            ChartExportUtils.registerChart(canvasId, chart);
+          });
+        }
+      },
+      {
+        canvasId: 'usd-value-by-action-chart',
+        title: 'Total USD Value by Action',
+        filename: 'usd-value-by-action',
+        chartType: 'bar',
+        renderer: (canvasId, data) => {
+          import('../charts/barChart.js').then(module => {
+            const BarChart = module.default;
+
+            // Process total USD value by action data
+            const usdValueData = Object.entries(data.activity.total_usd_value_by_action).map(([action, value]) => ({
+              action: action.replace(/_/g, ' '), // Replace underscores with spaces
+              usdValue: value
+            }));
+
+            // Create the chart
+            const chart = BarChart.createBasic(canvasId, usdValueData, {
+              labelKey: 'action',
+              valueKey: 'usdValue',
+              title: 'Total USD Value by Action'
+            });
+
+            // Register for export
+            ChartExportUtils.registerChart(canvasId, chart);
+          });
+        }
+      }
+    ];
+
+    // Create the layout
+    const container = this.createReportChartLayout(containerId, chartConfigs, 'Activity');
+
+    // Render each chart
+    chartConfigs.forEach(config => {
+      config.renderer(config.canvasId, networkData);
+    });
+  }
+
+  /**
+   * Create the Activity section for the report
+   * @param {string} containerId - The ID of the container element
+   * @param {Object} networkData - The network data
+   */
+  static createActivitySection(containerId, networkData) {
+    // Create the section title
+    const sectionTitle = document.createElement('h2');
+    sectionTitle.className = 'report-section-title';
+    sectionTitle.textContent = 'Activity';
+    document.getElementById(containerId).appendChild(sectionTitle);
+
+    // Create chart configurations
+    const chartConfigs = this.createActivityChartConfigs(); // Assuming this method exists
+
+    // Create the chart layout
+    this.createReportChartLayout(containerId, chartConfigs);
+  }
+
+  /**
    * Generate all report charts for the network
    * @param {string} containerId - Container element ID
    * @param {Object} networkData - Network data
@@ -1213,6 +1336,10 @@ export default class ReportChartManager {
     const curatorsSection = document.createElement('div');
     curatorsSection.id = 'report-curators-section';
     container.appendChild(curatorsSection);
+
+    const activitySection = document.createElement('div');
+    activitySection.id = 'report-activity-section';
+    container.appendChild(activitySection);
     
     // Generate charts for each section
     // For Vaults section, use the existing VaultReportUtils
@@ -1225,6 +1352,7 @@ export default class ReportChartManager {
     this.createOperatorsCharts('report-operators-section', networkData);
     this.createCollateralCharts('report-collateral-section', networkData);
     this.createCuratorsCharts('report-curators-section', networkData);
+    this.createActivityCharts('report-activity-section', networkData);
     
     // Add button to export all charts in the report
     const exportAllBtn = document.createElement('button');

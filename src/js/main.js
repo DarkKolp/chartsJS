@@ -10,7 +10,6 @@ import ChartFactory from './charts/chartFactory.js';
 import ReportChartManager from './utils/reportChartManager.js';
 import SankeyChartUtils from './utils/sankeyChartUtils.js';
 
-
 // Global instances
 const networkManager = new NetworkManager();
 const chartConfigManager = new ChartConfigManager();
@@ -19,336 +18,47 @@ let activeCategory = 'vaults'; // Default category
 
 /**
  * Initialize network selector
- * @param {Array} networks - Available networks
  */
-function initNetworkSelector(networks) {
+async function initNetworkSelector() {
   const selector = document.getElementById('network-selector');
-  
-  // Clear existing options
-  selector.innerHTML = '<option value="">Select Network</option>';
-  
-  // Add network options
+  const networks = await networkManager.initialize();
+
   networks.forEach(network => {
     const option = document.createElement('option');
     option.value = network.id;
-    option.textContent = network.name;
-    selector.appendChild(option);
+    option.text = network.name;
+    selector.add(option);
   });
-  
-  // Add event listener
-  selector.addEventListener('change', async (event) => {
-    const networkId = event.target.value;
-    if (networkId) {
-      await loadNetwork(networkId);
-    } else {
-      // Clear the UI when no network is selected
-      document.getElementById('chart-container').innerHTML = '';
-      document.getElementById('network-info').innerHTML = '';
-    }
-  });
+
+  selector.addEventListener('change', onNetworkChange);
 }
 
 /**
- * Initialize category navigation
+ * Event handler for network selection changes
  */
-function initCategoryNav() {
-  const navContainer = document.getElementById('category-nav');
-  if (!navContainer) return;
-  
-  // Clear existing buttons
-  navContainer.innerHTML = '';
-  
-  // Get categories from chart config manager
-  const categories = chartConfigManager.getCategories();
-  
-  // Create category buttons
-  Object.keys(categories).forEach(categoryId => {
-    const category = categories[categoryId];
-    const button = document.createElement('button');
-    button.className = `category-button${categoryId === activeCategory ? ' active' : ''}`;
-    button.dataset.category = categoryId;
-    button.textContent = category.name;
-    
-    button.addEventListener('click', () => {
-      // Update active state
-      document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      
-      // Update active category
-      activeCategory = categoryId;
-      
-      // Update chart selector
-      initChartSelector();
-      
-      // Load first chart in category if available
-      const charts = chartConfigManager.getChartsByCategory(categoryId);
-      if (charts.length > 0) {
-        loadChart(charts[0].id);
-      }
-    });
-    
-    navContainer.appendChild(button);
-  });
-
-  // Ensure collateral category is visible when directly accessing via URL
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('category') === 'collateral') {
-    document.querySelector('[data-category="collateral"]')?.classList.add('active');
-    activeCategory = 'collateral';
-    initChartSelector();
-  }
-
-}
-
-/**
- * Initialize chart selector based on active category
- */
-function initChartSelector() {
-  const selector = document.getElementById('chart-selector');
-  selector.innerHTML = '';
-  
-  // Get charts for active category
-  const charts = chartConfigManager.getChartsByCategory(activeCategory);
-  
-  // Add chart type buttons
-  charts.forEach(chart => {
-    const button = document.createElement('button');
-    button.className = 'chart-selector-button';
-    button.dataset.chartId = chart.id;
-    button.textContent = chart.name;
-    
-    button.addEventListener('click', () => {
-      // Highlight the selected button
-      document.querySelectorAll('.chart-selector-button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      button.classList.add('active');
-      
-      // Load the selected chart
-      loadChart(chart.id);
-    });
-    
-    selector.appendChild(button);
-  });
-}
-
-/**
- * Load collateral metadata
- * @returns {Promise<Object>} Collateral metadata
- */
-async function loadCollateralMeta() {
-  try {
-    const response = await fetch('./data/meta/collateral_meta.json');
-    if (!response.ok) {
-      throw new Error(`Failed to load collateral metadata: ${response.status}`);
-    }
-    window.collateralMeta = await response.json();
-    return window.collateralMeta;
-  } catch (error) {
-    console.error("Error loading collateral metadata:", error);
-    window.collateralMeta = {};
-    return {};
+async function onNetworkChange() {
+  const networkId = document.getElementById('network-selector').value;
+  if (networkId) {
+    await loadNetworkData(networkId);
+    showReportButtons();
+  } else {
+    clearUI();
   }
 }
 
 /**
- * Load network data and initialize navigation
+ * Load network data and update UI
  * @param {string} networkId - Network identifier
  */
-async function loadNetwork(networkId) {
+async function loadNetworkData(networkId) {
   try {
-    // Show loading state
-    document.getElementById('chart-container').innerHTML = '<div class="loading">Loading network data...</div>';
-    
-    // Load network data
     const data = await networkManager.loadNetwork(networkId);
-    
-    // Update network info
     updateNetworkInfo(data);
-    
-    // Initialize category navigation
-    initCategoryNav();
-    
-    // Initialize chart selector for default category
-    initChartSelector();
-
-    // Add report section buttons
-    addReportSectionButtons();
-    
-    // Auto-select the first chart in the active category
-    const charts = chartConfigManager.getChartsByCategory(activeCategory);
-    if (charts.length > 0) {
-      const firstChartId = charts[0].id;
-      document.querySelector(`[data-chart-id="${firstChartId}"]`)?.classList.add('active');
-      loadChart(firstChartId);
-    }
-    
   } catch (error) {
-    document.getElementById('chart-container').innerHTML = `<div class="error">Failed to load network: ${error.message}</div>`;
+    console.error('Error loading network data:', error);
+    displayErrorMessage('Failed to load network data.');
   }
 }
-
-function addReportSectionButtons() {
-  const container = document.querySelector('.network-info');
-  if (!container) return;
-  
-  const buttonContainer = document.createElement('div');
-  buttonContainer.className = 'report-buttons';
-  buttonContainer.style.display = 'flex';
-  buttonContainer.style.gap = '10px';
-  buttonContainer.style.marginTop = '15px';
-  
-  // Create report button
-  const reportBtn = document.createElement('button');
-  reportBtn.className = 'category-button';
-  reportBtn.textContent = 'Generate Full Report';
-  reportBtn.style.backgroundColor = '#8247e5';
-  reportBtn.style.color = 'white';
-  reportBtn.style.padding = '8px 15px';
-  
-  reportBtn.addEventListener('click', async () => {
-    const networkData = networkManager.getCurrentNetworkData();
-    if (!networkData) return;
-    
-    // Create or get report container
-    let reportContainer = document.getElementById('network-report-container');
-    if (!reportContainer) {
-      reportContainer = document.createElement('div');
-      reportContainer.id = 'network-report-container';
-      reportContainer.style.backgroundColor = '#f8fafc';
-      reportContainer.style.padding = '20px';
-      reportContainer.style.margin = '20px';
-      reportContainer.style.borderRadius = '8px';
-      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-      document.body.appendChild(reportContainer);
-    } else {
-      reportContainer.innerHTML = '';
-    }
-    
-    // Show loading indicator
-    reportContainer.innerHTML = '<div style="text-align: center; padding: 40px;">Generating report...</div>';
-    
-    // Scroll to report section
-    reportContainer.scrollIntoView({ behavior: 'smooth' });
-    
-    // Use our new ReportChartManager to generate the full report
-    setTimeout(() => {
-      ReportChartManager.generateFullReport('network-report-container', networkData);
-    }, 100);
-  });
-  
-  // Create vault report button (using existing VaultReportUtils)
-  const vaultBtn = document.createElement('button');
-  vaultBtn.className = 'category-button';
-  vaultBtn.textContent = 'Vault Report';
-  vaultBtn.style.backgroundColor = '#4b5563';
-  vaultBtn.style.color = 'white';
-  vaultBtn.style.padding = '8px 15px';
-  
-  vaultBtn.addEventListener('click', async () => {
-    const networkData = networkManager.getCurrentNetworkData();
-    if (!networkData) return;
-    
-    // Create report container if it doesn't exist
-    let reportContainer = document.getElementById('network-report-container');
-    if (!reportContainer) {
-      reportContainer = document.createElement('div');
-      reportContainer.id = 'network-report-container';
-      reportContainer.style.backgroundColor = '#f8fafc';
-      reportContainer.style.padding = '20px';
-      reportContainer.style.margin = '20px';
-      reportContainer.style.borderRadius = '8px';
-      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-      document.body.appendChild(reportContainer);
-    } else {
-      reportContainer.innerHTML = '';
-    }
-    
-    // Import VaultReportUtils dynamically
-    const VaultReportUtils = (await import('./utils/vaultReportUtils.js')).default;
-    VaultReportUtils.generateVaultSection('network-report-container', networkData);
-    
-    // Scroll to report section
-    reportContainer.scrollIntoView({ behavior: 'smooth' });
-  });
-  
-  // Create operators report button
-  const operatorsBtn = document.createElement('button');
-  operatorsBtn.className = 'category-button';
-  operatorsBtn.textContent = 'Operators Report';
-  operatorsBtn.style.backgroundColor = '#4b5563';
-  operatorsBtn.style.color = 'white';
-  operatorsBtn.style.padding = '8px 15px';
-  
-  operatorsBtn.addEventListener('click', async () => {
-    const networkData = networkManager.getCurrentNetworkData();
-    if (!networkData) return;
-    
-    // Create report container if it doesn't exist
-    let reportContainer = document.getElementById('network-report-container');
-    if (!reportContainer) {
-      reportContainer = document.createElement('div');
-      reportContainer.id = 'network-report-container';
-      reportContainer.style.backgroundColor = '#f8fafc';
-      reportContainer.style.padding = '20px';
-      reportContainer.style.margin = '20px';
-      reportContainer.style.borderRadius = '8px';
-      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-      document.body.appendChild(reportContainer);
-    } else {
-      reportContainer.innerHTML = '';
-    }
-    
-    // Use ReportChartManager to generate operators charts
-    ReportChartManager.createOperatorsCharts('network-report-container', networkData);
-    
-    // Scroll to report section
-    reportContainer.scrollIntoView({ behavior: 'smooth' });
-  });
-  
-  // Create collateral report button
-  const collateralBtn = document.createElement('button');
-  collateralBtn.className = 'category-button';
-  collateralBtn.textContent = 'Collateral Report';
-  collateralBtn.style.backgroundColor = '#4b5563';
-  collateralBtn.style.color = 'white';
-  collateralBtn.style.padding = '8px 15px';
-  
-  collateralBtn.addEventListener('click', async () => {
-    const networkData = networkManager.getCurrentNetworkData();
-    if (!networkData) return;
-    
-    // Create report container if it doesn't exist
-    let reportContainer = document.getElementById('network-report-container');
-    if (!reportContainer) {
-      reportContainer = document.createElement('div');
-      reportContainer.id = 'network-report-container';
-      reportContainer.style.backgroundColor = '#f8fafc';
-      reportContainer.style.padding = '20px';
-      reportContainer.style.margin = '20px';
-      reportContainer.style.borderRadius = '8px';
-      reportContainer.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-      document.body.appendChild(reportContainer);
-    } else {
-      reportContainer.innerHTML = '';
-    }
-    
-    // Use ReportChartManager to generate collateral charts
-    ReportChartManager.createCollateralCharts('network-report-container', networkData);
-    
-    // Scroll to report section
-    reportContainer.scrollIntoView({ behavior: 'smooth' });
-  });
-  
-  // Add all buttons to the container
-  buttonContainer.appendChild(reportBtn);
-  buttonContainer.appendChild(vaultBtn);
-  buttonContainer.appendChild(operatorsBtn);
-  buttonContainer.appendChild(collateralBtn);
-  
-  container.appendChild(buttonContainer);
-}
-
 
 /**
  * Update network information display
@@ -356,35 +66,96 @@ function addReportSectionButtons() {
  */
 function updateNetworkInfo(data) {
   const infoElement = document.getElementById('network-info');
-  
-  // Extract basic network info
-  const networkName = data.network?.name || 'Unknown Network';
-  const totalStake = data.economic_security?.total_usd_stake || 0;
-  const formattedStake = new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: 'USD',
-    maximumFractionDigits: 0
-  }).format(totalStake);
-  
-  infoElement.innerHTML = `
-    <div class="network-info-header">
-      <h2>${networkName}</h2>
-      <div class="network-stats">
-        <div class="stat-item">
-          <span class="stat-label">Total Stake:</span>
-          <span class="stat-value">${formattedStake}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Operators:</span>
-          <span class="stat-value">${data.operators?.count || 'N/A'}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Vaults:</span>
-          <span class="stat-value">${data.vault_configuration?.total_vaults || 'N/A'}</span>
-        </div>
-      </div>
-    </div>
-  `;
+  if (infoElement) {
+    infoElement.textContent = `Network: ${data.network.name}`; // Basic info
+  }
+}
+
+/**
+ * Show report type selection buttons
+ */
+function showReportButtons() {
+  const container = document.getElementById('report-buttons');
+  container.innerHTML = ''; // Clear existing buttons
+
+  const lightReportButton = createButton('Light Report', showCategoryButtons);
+  const fullReportButton = createButton('Full Report', generateFullReport); // Placeholder
+
+  container.appendChild(lightReportButton);
+  container.appendChild(fullReportButton);
+}
+
+/**
+ * Show category buttons for Light Report
+ */
+function showCategoryButtons() {
+  const container = document.getElementById('category-buttons');
+  container.innerHTML = ''; // Clear existing buttons
+
+  const categories = ['Economic Security', 'Operators', 'Vaults', 'Curators'];
+  categories.forEach(category => {
+    const button = createButton(category, () => displayCategoryCharts(category));
+    container.appendChild(button);
+  });
+}
+
+/**
+ * Display charts for a given category
+ * @param {string} category - The category name
+ */
+function displayCategoryCharts(category) {
+  const chartContainer = document.getElementById('chart-container');
+  chartContainer.innerHTML = ''; // Clear existing charts
+
+  const categoryId = category.toLowerCase().replace(' ', '-'); // Convert category name to ID
+  const charts = chartConfigManager.getChartsByCategory(categoryId);
+
+  if (charts && charts.length > 0) {
+    // Load and display the first chart in the category for simplicity
+    loadChart(charts[0].id);
+  } else {
+    displayErrorMessage(`No charts found for ${category}.`);
+  }
+}
+
+/**
+ * Generate and display a full report (placeholder)
+ */
+function generateFullReport() {
+  const chartContainer = document.getElementById('chart-container');
+  chartContainer.innerHTML = 'Full report generation is not yet implemented.';
+}
+
+/**
+ * Create a button element with a click handler
+ * @param {string} text - Button text
+ * @param {function} onClick - Click event handler
+ * @returns {HTMLButtonElement} - The created button element
+ */
+function createButton(text, onClick) {
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+/**
+ * Display an error message in the chart container
+ * @param {string} message - The error message
+ */
+function displayErrorMessage(message) {
+  const chartContainer = document.getElementById('chart-container');
+  chartContainer.innerHTML = `<div class="error-message">${message}</div>`;
+}
+
+/**
+ * Clear the main UI elements
+ */
+function clearUI() {
+  document.getElementById('network-info').textContent = '';
+  document.getElementById('report-buttons').innerHTML = '';
+  document.getElementById('category-buttons').innerHTML = '';
+  document.getElementById('chart-container').innerHTML = '';
 }
 
 /**
@@ -392,51 +163,52 @@ function updateNetworkInfo(data) {
  * @param {string} chartId - Chart identifier
  */
 function loadChart(chartId) {
-  // Get current network data
-  const networkData = networkManager.getCurrentNetworkData();
-  if (!networkData) {
-    console.error('No network data available');
-    return;
-  }
+    // Get current network data
+    const networkData = networkManager.getCurrentNetworkData();
+    if (!networkData) {
+        console.error('No network data available');
+        return;
+    }
+
+    // Get chart configuration
+    const chartConfig = chartConfigManager.getChartConfig(chartId);
+    if (!chartConfig) {
+        console.error(`Chart configuration not found for ${chartId}`);
+        return;
+    }
+
+    // Clear existing chart
+    if (currentChart) {
+        ChartRegistry.destroy(currentChart);
+    }
+
+    // Prepare container
+    const container = document.getElementById('chart-container');
+    container.innerHTML = '';
+
+    // Add chart title
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'chart-title';
+    titleDiv.textContent = chartConfig.config.title || chartConfig.name;
+    container.appendChild(titleDiv);
+
+    // Create chart area
+    const chartArea = document.createElement('div');
+    chartArea.className = 'chart-area';
+    container.appendChild(chartArea);
+
+    const canvas = document.createElement('canvas');
+    canvas.id = `chart-${chartId}`;
+    chartArea.appendChild(canvas);
+
+    // Extract data from the specified path
+    let data = DataTransformer.extractFromPath(networkData, chartConfig.dataPath);
+
+    // Apply custom transform if needed
+    if (chartConfig.config.customTransform) {
+        data = transformCustomData(data, chartConfig);
+    }
   
-  // Get chart configuration
-  const chartConfig = chartConfigManager.getChartConfig(chartId);
-  if (!chartConfig) {
-    console.error(`Chart configuration not found for ${chartId}`);
-    return;
-  }
-  
-  // Clear existing chart
-  if (currentChart) {
-    ChartRegistry.destroy(currentChart);
-  }
-  
-  // Prepare container
-  const container = document.getElementById('chart-container');
-  container.innerHTML = '';
-  
-  // Add chart title
-  const titleDiv = document.createElement('div');
-  titleDiv.className = 'chart-title';
-  titleDiv.textContent = chartConfig.config.title || chartConfig.name;
-  container.appendChild(titleDiv);
-  
-  // Create chart area
-  const chartArea = document.createElement('div');
-  chartArea.className = 'chart-area';
-  container.appendChild(chartArea);
-  
-  const canvas = document.createElement('canvas');
-  canvas.id = `chart-${chartId}`;
-  chartArea.appendChild(canvas);
-  
-  // Extract data from the specified path
-  let data = DataTransformer.extractFromPath(networkData, chartConfig.dataPath);
-  
-  // Apply custom transform if needed
-  if (chartConfig.config.customTransform) {
-    data = transformCustomData(data, chartConfig);
-  }
   
   // Create the chart based on type
   let chart;
@@ -697,52 +469,18 @@ function transformCustomData(data, chartConfig) {
 /**
  * Initialize the application
  */
-async function initApp() {
-  // Initialize network manager
-  const networks = await networkManager.initialize();
-  
-  // Initialize UI
-  initNetworkSelector(networks);
-  
-  // Update UI based on URL parameters (optional)
-  const urlParams = new URLSearchParams(window.location.search);
-  const networkId = urlParams.get('network');
-  const categoryId = urlParams.get('category');
-  const chartId = urlParams.get('chart');
+async function initializeApp() {
+    await initNetworkSelector();
+    await loadCollateralMeta(); // Ensure this is loaded
 
-  await loadCollateralMeta();
-  
-  // Set active category if specified
-  if (categoryId && chartConfigManager.getCategories()[categoryId]) {
-    activeCategory = categoryId;
-  }
-  
-  if (networkId) {
-    // Set the network selector
-    document.getElementById('network-selector').value = networkId;
-    
-    // Load the network
-    await loadNetwork(networkId);
-    
-    // Load specific category if provided
-    if (categoryId) {
-      document.querySelector(`[data-category="${categoryId}"]`)?.click();
+    // Initialize VaultReportUtils (ensure it's awaited if necessary)
+    try {
+        const module = await import('./utils/vaultReportUtils.js');
+        const VaultReportUtils = module.default;
+        VaultReportUtils.initialize(networkManager);
+    } catch (err) {
+        console.error('Failed to load vault report utils:', err);
     }
-    
-    // Load the specified chart if provided
-    if (chartId) {
-      const chartButton = document.querySelector(`[data-chart-id="${chartId}"]`);
-      if (chartButton) {
-        chartButton.click();
-      }
-    }
-  }
-
-  import('./utils/vaultReportUtils.js').then(module => {
-    const VaultReportUtils = module.default;
-    VaultReportUtils.initialize(networkManager);
-  }).catch(err => console.error('Failed to load vault report utils:', err));  
 }
 
-// Initialize when the DOM is ready
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', initializeApp);
