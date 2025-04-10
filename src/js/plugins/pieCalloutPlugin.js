@@ -1,4 +1,3 @@
-// src/js/plugins/pieCalloutPlugin.js
 export const PieCalloutPlugin = {
   id: 'pieCallouts',
   afterDraw: (chart) => {
@@ -17,9 +16,6 @@ export const PieCalloutPlugin = {
     
     // Get total value for percentage calculation
     const total = chart.data.datasets[0].data.reduce((sum, val) => sum + parseFloat(val), 0);
-    
-    // Track line directions for collision detection
-    const placedLabels = [];
     
     ctx.save();
     
@@ -54,45 +50,40 @@ export const PieCalloutPlugin = {
       const startY = centerY + Math.sin(angle) * outerRadius;
       
       // Calculate the intermediate point (elbow of the line)
-      const midPointRadius = outerRadius * 1.15; // Extend 15% (can adjust)
+      const midPointRadius = outerRadius * 1.15;
       const midX = centerX + Math.cos(angle) * midPointRadius;
       const midY = centerY + Math.sin(angle) * midPointRadius;
 
-      // Calculate the offset for the final text position
-      const offsetMultiplier = 15; // Controls length of the final line segment
+      // Determine label position based on angle
+      let finalLabelX, finalLabelY, textAlign, textBaseline;
+      const offsetMultiplier = 15;
       const finalOffsetX = Math.cos(angle) * offsetMultiplier;
       const finalOffsetY = Math.sin(angle) * offsetMultiplier;
 
-      // Calculate final label position
-      let finalLabelX = midX + finalOffsetX;
-      let finalLabelY = midY + finalOffsetY;
-
-      // Adjust final label position to stay within canvas boundary
-      let textAlign = Math.cos(angle) >= 0 ? 'left' : 'right';
-      let textBaseline = 'middle';
-
-      if (finalLabelX < labelArea.left) {
-        finalLabelX = labelArea.left;
+      // Consistent horizontal alignment
+      if (Math.cos(angle) >= 0) {
+        // Right side of the chart
+        finalLabelX = midX + finalOffsetX;
         textAlign = 'left';
-      }
-      if (finalLabelX > labelArea.right) {
-        finalLabelX = labelArea.right;
+      } else {
+        // Left side of the chart
+        finalLabelX = midX + finalOffsetX;
         textAlign = 'right';
       }
-      if (finalLabelY < labelArea.top) {
-        finalLabelY = labelArea.top;
-        textBaseline = 'top';
-      }
-      if (finalLabelY > labelArea.bottom) {
-        finalLabelY = labelArea.bottom;
-        textBaseline = 'bottom';
-      }
-      
+
+      // Vertical positioning
+      finalLabelY = midY + finalOffsetY;
+      textBaseline = 'middle';
+
+      // Boundary checks
+      finalLabelX = Math.max(labelArea.left, Math.min(finalLabelX, labelArea.right));
+      finalLabelY = Math.max(labelArea.top, Math.min(finalLabelY, labelArea.bottom));
+
       // Draw line from slice to label
       ctx.beginPath();
       ctx.moveTo(startX, startY);
-      ctx.lineTo(midX, midY); // Line to the elbow
-      ctx.lineTo(finalLabelX, finalLabelY); // Line to the text position
+      ctx.lineTo(midX, midY);
+      ctx.lineTo(finalLabelX, finalLabelY);
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.lineWidth = 1;
       ctx.stroke();
@@ -100,13 +91,10 @@ export const PieCalloutPlugin = {
       // Draw label text
       ctx.font = '12px Arial';
       ctx.fillStyle = '#000000';
-      ctx.textAlign = textAlign; // Use potentially adjusted alignment
-      ctx.textBaseline = textBaseline; // Use potentially adjusted baseline
+      ctx.textAlign = textAlign;
+      ctx.textBaseline = textBaseline;
       
-      ctx.fillText(label, finalLabelX, finalLabelY); // Draw text at the final calculated position
-      
-      // Track positioned labels (optional, for future collision handling)
-      placedLabels.push({ x: finalLabelX, y: finalLabelY, label, angle });
+      ctx.fillText(label, finalLabelX, finalLabelY);
     });
     
     ctx.restore();

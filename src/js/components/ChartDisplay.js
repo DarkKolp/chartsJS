@@ -123,8 +123,14 @@ export default class ChartDisplay {
       return null;
     }
     
-    // Create a simple pie chart
-    let labels = data.map(item => item.asset || item.label || 'Unknown');
+    // Increase canvas container height
+    canvas.parentNode.style.height = '500px';
+    
+    // Improved label extraction
+    let labels = data.map(item => {
+      return item.curator_id || item.label || item.name || 'Unknown';
+    });
+    
     let values = data.map(item => parseFloat(item.percentage || item.value || 0));
     
     // Calculate total for percentage calculations
@@ -139,9 +145,9 @@ export default class ChartDisplay {
     values.forEach((value, index) => {
       const percentage = (value / total) * 100;
       if (percentage < smallSliceThreshold) {
-        smallSlices.push({ label: labels[index], value });
+        smallSlices.push({ label: labels[index], value, percentage });
       } else {
-        bigSlices.push({ label: labels[index], value });
+        bigSlices.push({ label: labels[index], value, percentage });
       }
     });
     
@@ -152,25 +158,33 @@ export default class ChartDisplay {
     // Add "Others" category if needed
     if (smallSlices.length > 0) {
       const othersValue = smallSlices.reduce((sum, item) => sum + item.value, 0);
-      labels.push('Others');
+      const othersPercentage = smallSlices.reduce((sum, item) => sum + item.percentage, 0);
+      
+      labels.push(`Others (${othersPercentage.toFixed(1)}%)`);
       values.push(othersValue);
     }
     
     // Colors
     const colors = [
       '#8247e5', '#a466f6', '#3b82f6', '#14b8a6', 
-      '#f97316', '#ec4899', '#8b5cf6', '#6366f1', 
-      '#a855f7', '#22c55e', '#ef4444', '#eab308'
+      '#f97316', '#ec4899', '#22c55e', '#6366f1', 
+      '#a855f7', '#ef4444', '#eab308'
     ];
+    
+    // Ensure "Others" gets a distinct color
+    const othersColor = '#10b981';
     
     // Create chart
     const chart = new Chart(canvas, {
-      type: 'doughnut',
+      type: 'pie',
       data: {
         labels: labels,
         datasets: [{
           data: values,
-          backgroundColor: colors.slice(0, Math.min(labels.length, colors.length)),
+          backgroundColor: [
+            ...colors.slice(0, Math.min(labels.length - 1, colors.length)),
+            othersColor
+          ],
           borderWidth: 1,
           borderColor: '#ffffff'
         }]
@@ -178,21 +192,35 @@ export default class ChartDisplay {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '45%',
         layout: {
           padding: {
-            top: 40,
-            right: 60,
-            bottom: 40,
-            left: 60
+            top: 60,
+            right: 100,
+            bottom: 60,
+            left: 100
           }
         },
         plugins: {
           legend: { 
-            display: false // Hide default legend since we use callouts
+            display: false
           },
           pieCallouts: {
-            enabled: true // Enable custom callout plugin
+            enabled: true
+          },
+          datalabels: {
+            display: true,
+            color: 'white',
+            font: {
+              weight: 'bold',
+              size: 12
+            },
+            formatter: (value, context) => {
+              const percentage = ((value / total) * 100).toFixed(1);
+              // Only show percentages for slices >= 7%
+              return percentage >= 7 ? `${percentage}%` : '';
+            },
+            anchor: 'center',
+            align: 'center'
           },
           tooltip: {
             callbacks: {
@@ -203,24 +231,10 @@ export default class ChartDisplay {
                 return `${label}: ${percentage}%`;
               }
             }
-          },
-          datalabels: {
-            // Temporarily disable datalabels to test callout plugin
-            display: false, // <--- ADDED THIS LINE
-            formatter: (value) => {
-              const percentage = ((value / total) * 100).toFixed(2);
-              return `${percentage}%`;
-            },
-            color: '#ffffff',
-            font: {
-              weight: 'bold',
-              size: 12
-            },
-            anchor: 'center',
-            align: 'center'
           }
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
     
     // Register for export
@@ -554,8 +568,6 @@ export default class ChartDisplay {
         return this.renderDistributionChart(canvasId, chartData);
       case 'bar':
         return this.renderBarChart(canvasId, chartData, chartId);
-      case 'pie':
-        return this.renderPieChart(canvasId, chartData, chartId);
       default:
         return this.renderGenericChart(canvasId, chartData, chartId);
     }
@@ -794,138 +806,7 @@ export default class ChartDisplay {
     return chart;
   }
   
-  renderPieChart(canvasId, data, chartId) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-      console.error(`Canvas ${canvasId} not found`);
-      return null;
-    }
-    
-    // Extract data based on common patterns
-    let labelKey = 'label';
-    let valueKey = 'value';
-    
-    // For operators section
-    if (chartId === 'distribution' || chartId === 'concentration') {
-      labelKey = 'operator_id' in data[0] ? 'label' : 'name';
-      valueKey = 'percentage';
-    } 
-    // For curators section
-    else if (data[0].curator_id) {
-      labelKey = 'curator_id';
-      valueKey = 'percentage';
-    }
-    
-    // Extract raw data
-    let rawLabels = [];
-    let rawValues = [];
-    
-    data.forEach(item => {
-      const label = item[labelKey] || item.name || item.label || item.operator_id || item.curator_id || 'Unknown';
-      let value = item[valueKey];
-      if (value === undefined) {
-        // Try fallbacks
-        value = item.percentage || item.value || 0;
-      }
-      
-      rawLabels.push(label);
-      rawValues.push(parseFloat(value));
-    });
-    
-    // Calculate total for percentage calculations
-    const total = rawValues.reduce((sum, val) => sum + val, 0);
-    
-    // Group small slices (<5%) into "Others"
-    const smallSliceThreshold = 5; // 5%
-    const smallSlices = [];
-    const bigSlices = [];
-    
-    // Identify small slices
-    rawValues.forEach((value, index) => {
-      const percentage = (value / total) * 100;
-      if (percentage < smallSliceThreshold) {
-        smallSlices.push({ label: rawLabels[index], value });
-      } else {
-        bigSlices.push({ label: rawLabels[index], value });
-      }
-    });
-    
-    // Create new data arrays
-    let labels = bigSlices.map(item => item.label);
-    let values = bigSlices.map(item => item.value);
-    
-    // Add "Others" category if needed
-    if (smallSlices.length > 0) {
-      const othersValue = smallSlices.reduce((sum, item) => sum + item.value, 0);
-      labels.push('Others');
-      values.push(othersValue);
-    }
-    
-    // Colors
-    const colors = [
-      '#8247e5', '#a466f6', '#3b82f6', '#14b8a6', 
-      '#f97316', '#ec4899', '#8b5cf6', '#6366f1', 
-      '#a855f7', '#22c55e', '#ef4444', '#eab308'
-    ];
-    
-    // Create chart
-    const chart = new Chart(canvas, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors.slice(0, Math.min(labels.length, colors.length)),
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '45%',
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              padding: 15,
-              font: {
-                size: 12
-              }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                const percentage = ((value / total) * 100).toFixed(2);
-                return `${label}: ${percentage}%`;
-              }
-            }
-          },
-          datalabels: {
-            formatter: (value) => {
-              const percentage = ((value / total) * 100).toFixed(2);
-              return `${percentage}%`;
-            },
-            color: '#ffffff',
-            font: {
-              weight: 'bold',
-              size: 12
-            },
-            anchor: 'center',
-            align: 'center'
-          }
-        }
-      }
-    });
-    
-    // Register for export
-    ChartRegistry.register(canvasId, chart);
-    ChartExportUtils.registerChart(canvasId, chart);
-    
-    return chart;
-  }
+  
   
   
   
@@ -1088,7 +969,7 @@ export default class ChartDisplay {
         cutout: '70%', // Make the donut hole larger
         plugins: {
           pieLabels: {
-            enabled: false // Explicitly disable the custom plugin for vault charts
+            enabled: false
           },
           legend: {
             position: 'bottom',
