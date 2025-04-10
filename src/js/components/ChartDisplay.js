@@ -160,7 +160,7 @@ export default class ChartDisplay {
       const othersValue = smallSlices.reduce((sum, item) => sum + item.value, 0);
       const othersPercentage = smallSlices.reduce((sum, item) => sum + item.percentage, 0);
       
-      labels.push(`Others (${othersPercentage.toFixed(1)}%)`);
+      labels.push(`Others`); // No percentage here! The plugin will add it if needed
       values.push(othersValue);
     }
     
@@ -171,9 +171,6 @@ export default class ChartDisplay {
       '#a855f7', '#ef4444', '#eab308'
     ];
     
-    // Ensure "Others" gets a distinct color
-    const othersColor = '#10b981';
-    
     // Create chart
     const chart = new Chart(canvas, {
       type: 'pie',
@@ -181,10 +178,7 @@ export default class ChartDisplay {
         labels: labels,
         datasets: [{
           data: values,
-          backgroundColor: [
-            ...colors.slice(0, Math.min(labels.length - 1, colors.length)),
-            othersColor
-          ],
+          backgroundColor: colors.slice(0, Math.min(labels.length, colors.length)),
           borderWidth: 1,
           borderColor: '#ffffff'
         }]
@@ -243,6 +237,7 @@ export default class ChartDisplay {
     
     return chart;
   }
+  
 
   // Updated Collateral Utilization Chart
   renderUtilizationChart(canvasId, data) {

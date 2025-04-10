@@ -42,7 +42,7 @@ export const PieCalloutPlugin = {
       // Get angle at the middle of the slice
       const angle = element.startAngle + (element.endAngle - element.startAngle) / 2;
       
-      // Calculate positions based on element's radius
+      // Get radius of the pie
       const outerRadius = element.outerRadius;
       
       // Starting point at the edge of the slice
@@ -50,51 +50,95 @@ export const PieCalloutPlugin = {
       const startY = centerY + Math.sin(angle) * outerRadius;
       
       // Calculate the intermediate point (elbow of the line)
-      const midPointRadius = outerRadius * 1.15;
+      const midPointRadius = outerRadius * 1.2;
       const midX = centerX + Math.cos(angle) * midPointRadius;
       const midY = centerY + Math.sin(angle) * midPointRadius;
 
-      // Determine label position based on angle
+      // Improved positioning logic for labels
       let finalLabelX, finalLabelY, textAlign, textBaseline;
-      const offsetMultiplier = 15;
-      const finalOffsetX = Math.cos(angle) * offsetMultiplier;
-      const finalOffsetY = Math.sin(angle) * offsetMultiplier;
-
-      // Consistent horizontal alignment
-      if (Math.cos(angle) >= 0) {
-        // Right side of the chart
-        finalLabelX = midX + finalOffsetX;
-        textAlign = 'left';
+      
+      // Determine which quadrant we're in
+      const isRightHalf = Math.cos(angle) >= 0;
+      const isTopHalf = Math.sin(angle) <= 0;
+      
+      // Handle special cases for top and bottom positions
+      const isNearVertical = Math.abs(Math.cos(angle)) < 0.15; // Within ~8.5 degrees of vertical
+      const isNearHorizontal = Math.abs(Math.sin(angle)) < 0.15; // Within ~8.5 degrees of horizontal
+      
+      // Fixed distance from the midpoint
+      const labelDistance = outerRadius * 0.3;
+      
+      if (isNearVertical) {
+        // Nearly vertical (top or bottom slice)
+        finalLabelX = midX;
+        finalLabelY = midY + (isTopHalf ? -labelDistance : labelDistance);
+        textAlign = 'center';
+      } else if (isNearHorizontal) {
+        // Nearly horizontal (left or right slice)
+        finalLabelX = midX + (isRightHalf ? labelDistance : -labelDistance);
+        finalLabelY = midY;
+        textAlign = isRightHalf ? 'left' : 'right';
       } else {
-        // Left side of the chart
-        finalLabelX = midX + finalOffsetX;
-        textAlign = 'right';
+        // Regular angled position
+        const offsetX = Math.cos(angle) * labelDistance;
+        const offsetY = Math.sin(angle) * labelDistance;
+        
+        finalLabelX = midX + offsetX * 1.5;
+        finalLabelY = midY + offsetY * 1.5;
+        textAlign = isRightHalf ? 'left' : 'right';
       }
-
-      // Vertical positioning
-      finalLabelY = midY + finalOffsetY;
-      textBaseline = 'middle';
-
-      // Boundary checks
+      
+      textBaseline = 'middle'; // Always center vertically
+      
+      // Boundary checks to keep labels within view
       finalLabelX = Math.max(labelArea.left, Math.min(finalLabelX, labelArea.right));
       finalLabelY = Math.max(labelArea.top, Math.min(finalLabelY, labelArea.bottom));
 
-      // Draw line from slice to label
+      // Draw line from slice to label with nice bezier curve
       ctx.beginPath();
       ctx.moveTo(startX, startY);
-      ctx.lineTo(midX, midY);
-      ctx.lineTo(finalLabelX, finalLabelY);
+      
+      // Use quadratic curve for smoother line
+      ctx.quadraticCurveTo(midX, midY, finalLabelX, finalLabelY);
+      
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.lineWidth = 1;
       ctx.stroke();
       
       // Draw label text
-      ctx.font = '12px Arial';
+      ctx.font = '12px Arial, sans-serif';
       ctx.fillStyle = '#000000';
       ctx.textAlign = textAlign;
       ctx.textBaseline = textBaseline;
       
-      ctx.fillText(label, finalLabelX, finalLabelY);
+      // Add small circle at the end of the line
+      ctx.beginPath();
+      ctx.arc(finalLabelX, finalLabelY, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fill();
+      
+      // Position text with slight offset from the end point
+      const textOffsetX = isRightHalf ? 8 : -8;
+      const textX = finalLabelX + (textAlign === 'center' ? 0 : textOffsetX);
+      
+      ctx.fillStyle = '#000000';
+      ctx.fillText(label, textX, finalLabelY);
+      
+      // Add percentage ONLY for small slices (<7%)
+      if (percentage < 7) {
+        const percentText = `${percentage.toFixed(1)}%`;
+        ctx.font = '11px Arial, sans-serif';
+        ctx.fillStyle = '#555555';
+        
+        // Position percentage text below or next to the label
+        if (textAlign === 'center') {
+          ctx.fillText(percentText, textX, finalLabelY + 15);
+        } else {
+          const labelWidth = ctx.measureText(label).width;
+          const spacer = isRightHalf ? ' ' : '';
+          ctx.fillText(`${spacer}(${percentText})`, textX + (isRightHalf ? labelWidth + 4 : -4), finalLabelY);
+        }
+      }
     });
     
     ctx.restore();
