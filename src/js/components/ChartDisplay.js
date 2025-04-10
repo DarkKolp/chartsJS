@@ -205,6 +205,8 @@ export default class ChartDisplay {
             }
           },
           datalabels: {
+            // Temporarily disable datalabels to test callout plugin
+            display: false, // <--- ADDED THIS LINE
             formatter: (value) => {
               const percentage = ((value / total) * 100).toFixed(2);
               return `${percentage}%`;
@@ -682,112 +684,6 @@ export default class ChartDisplay {
             grid: {
               display: false
             }
-          }
-        }
-      }
-    });
-    
-    // Register for export
-    ChartRegistry.register(canvasId, chart);
-    ChartExportUtils.registerChart(canvasId, chart);
-    
-    return chart;
-  }
-  
-  renderDistributionChart(canvasId, data) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-      console.error(`Canvas ${canvasId} not found`);
-      return null;
-    }
-    
-    // Create a simple pie chart
-    let labels = data.map(item => item.asset || item.label || 'Unknown');
-    let values = data.map(item => parseFloat(item.percentage || item.value || 0));
-    
-    // Calculate total for percentage calculations
-    const total = values.reduce((sum, val) => sum + val, 0);
-    
-    // Group small slices (<5%) into "Others"
-    const smallSliceThreshold = 5; // 5%
-    const smallSlices = [];
-    const bigSlices = [];
-    
-    // Identify small slices
-    values.forEach((value, index) => {
-      const percentage = (value / total) * 100;
-      if (percentage < smallSliceThreshold) {
-        smallSlices.push({ label: labels[index], value });
-      } else {
-        bigSlices.push({ label: labels[index], value });
-      }
-    });
-    
-    // Create new data arrays
-    labels = bigSlices.map(item => item.label);
-    values = bigSlices.map(item => item.value);
-    
-    // Add "Others" category if needed
-    if (smallSlices.length > 0) {
-      const othersValue = smallSlices.reduce((sum, item) => sum + item.value, 0);
-      labels.push('Others');
-      values.push(othersValue);
-    }
-    
-    // Colors
-    const colors = [
-      '#8247e5', '#a466f6', '#3b82f6', '#14b8a6', 
-      '#f97316', '#ec4899', '#8b5cf6', '#6366f1', 
-      '#a855f7', '#22c55e', '#ef4444', '#eab308'
-    ];
-    
-    // Create chart
-    const chart = new Chart(canvas, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors.slice(0, Math.min(labels.length, colors.length)),
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '45%',
-        plugins: {
-          legend: { 
-            position: 'right',
-            labels: {
-              padding: 15,
-              font: {
-                size: 12
-              }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                const percentage = ((value / total) * 100).toFixed(2);
-                return `${label}: ${percentage}%`;
-              }
-            }
-          },
-          datalabels: {
-            formatter: (value) => {
-              const percentage = ((value / total) * 100).toFixed(2);
-              return `${percentage}%`;
-            },
-            color: '#ffffff',
-            font: {
-              weight: 'bold',
-              size: 12
-            },
-            anchor: 'center',
-            align: 'center'
           }
         }
       }
