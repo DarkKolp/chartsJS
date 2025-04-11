@@ -89,7 +89,7 @@
           {
             "asset": "WBTC",
             "utilization_percentage": 0.0,
-            "max_limit": 19100000000000.01
+            "max_limit": "Infinity"
           }
         ],
         "collateral_distribution": [

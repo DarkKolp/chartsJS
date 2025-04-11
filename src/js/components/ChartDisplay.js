@@ -58,10 +58,11 @@ export default class ChartDisplay {
     
     // Create charts container - CHANGED TO VERTICAL LAYOUT
     const chartsContainer = document.createElement('div');
-    chartsContainer.className = 'charts-stack'; // Changed from 'charts-grid'
+    chartsContainer.className = 'charts-row'; // Changed from 'charts-grid'
     chartsContainer.style.display = 'flex';
-    chartsContainer.style.flexDirection = 'column';
-    chartsContainer.style.gap = '30px';
+    chartsContainer.style.flexDirection = 'row'; // Changed from 'column'
+    chartsContainer.style.flexWrap = 'wrap'; // Important for responsiveness
+    chartsContainer.style.gap = '24px'; // Space between charts
     displayContainer.appendChild(chartsContainer);
     
     // Add container to DOM
@@ -254,164 +255,6 @@ export default class ChartDisplay {
     return chart;
   }
   
-
-  // Updated Collateral Utilization Chart
-  renderUtilizationChart(canvasId, data) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-      console.error(`Canvas ${canvasId} not found`);
-      return null;
-    }
-    
-    // Create a very simple horizontal bar chart
-    const labels = data.map(item => item.asset);
-    const values = data.map(item => parseFloat(item.utilization_percentage || 0));
-    const limits = data.map(item => parseFloat(item.max_limit || 0));
-    
-    // Create chart with minimal configuration
-    const chart = new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: values.map(v => {
-            if (v >= 90) return '#ef4444'; // Red for high utilization
-            if (v >= 60) return '#f97316'; // Orange for medium-high
-            if (v >= 30) return '#22c55e'; // Green for medium
-            return '#3b82f6';              // Blue for low
-          }),
-          borderWidth: 0,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            right: 100 // Extra padding for max limit labels
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const index = context.dataIndex;
-                const value = values[index];
-                const limit = limits[index];
-                
-                let limitText = '';
-                if (limit) {
-                  if (limit >= 1e9) {
-                    limitText = ` (Max: $${(limit/1e9).toFixed(1)}B)`;
-                  } else if (limit >= 1e6) {
-                    limitText = ` (Max: $${(limit/1e6).toFixed(1)}M)`;
-                  } else if (limit >= 1e3) {
-                    limitText = ` (Max: $${(limit/1e3).toFixed(1)}K)`;
-                  } else {
-                    limitText = ` (Max: $${limit.toFixed(2)})`;
-                  }
-                }
-                
-                return `Utilization: ${value.toFixed(2)}%${limitText}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            beginAtZero: true,
-            max: 100,
-            title: {
-              display: true,
-              text: 'Utilization %',
-              color: '#64748b',
-              font: {
-                size: 12,
-                weight: 'normal'
-              }
-            },
-            ticks: {
-              // Only show 20% increments
-              callback: (value) => (value % 20 === 0) ? `${value}%` : '',
-              stepSize: 20
-            },
-            grid: {
-              color: 'rgba(226, 232, 240, 0.6)'
-            }
-          },
-          y: {
-            grid: {
-              display: false // No horizontal grid lines
-            }
-          }
-        },
-        // Use after draw to add custom value labels and max limits
-        plugins: [{
-          id: 'customLabels',
-          afterDraw: (chart) => {
-            const ctx = chart.ctx;
-            const yAxis = chart.scales.y;
-            const xAxis = chart.scales.x;
-            
-            ctx.save();
-            
-            // For each data point
-            chart.data.datasets[0].data.forEach((value, index) => {
-              const y = yAxis.getPixelForValue(index);
-              const x = xAxis.getPixelForValue(value);
-              
-              // For values less than 10%, show black text to the right
-              if (value < 10) {
-                ctx.fillStyle = '#000000';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.font = '12px Arial';
-                ctx.fillText(`${value.toFixed(2)}%`, x + 5, y);
-              }
-              
-              // Add max limit labels on the right
-              const limit = limits[index];
-              if (limit !== undefined) {
-                let formattedLimit;
-                if (limit === Infinity || limit > 1e12) {
-                  formattedLimit = '∞';
-                } else if (limit >= 1e9) {
-                  formattedLimit = `${(limit/1e9).toFixed(1)}B`;
-                } else if (limit >= 1e6) {
-                  formattedLimit = `${(limit/1e6).toFixed(1)}M`;
-                } else if (limit >= 1e3) {
-                  formattedLimit = `${(limit/1e3).toFixed(1)}K`;
-                } else {
-                  formattedLimit = limit.toFixed(0);
-                }
-                
-                ctx.fillStyle = '#64748b';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.font = '11px Arial';
-                
-                // Position after the end of x-axis
-                const rightPosition = xAxis.right + 15;
-                ctx.fillText(formattedLimit, rightPosition, y);
-              }
-            });
-            
-            ctx.restore();
-          }
-        }]
-      }
-    });
-    
-    // Register for export
-    ChartRegistry.register(canvasId, chart);
-    ChartExportUtils.registerChart(canvasId, chart);
-    
-    return chart;
-  }
   
   // New method for Vault and Collateral Counts
   renderVaultCollateralCounts(canvasId, data, chartId) {
@@ -485,7 +328,7 @@ export default class ChartDisplay {
 
     // Add Others mean if there are any
     if (othersData.count > 0) {
-      entities.push(`Other (${othersData.count} mean)`);
+      entities.push(`Others (mean)`);
       vaultCounts.push(Math.round(othersData.vaultTotal / othersData.count));
       collateralCounts.push(Math.round(othersData.collateralTotal / othersData.count));
     }
@@ -594,8 +437,6 @@ export default class ChartDisplay {
         return this.renderUtilizationChart(canvasId, chartData);
       case 'distribution':
         return this.renderDistributionChart(canvasId, chartData);
-      case 'bar':
-        return this.renderBarChart(canvasId, chartData, chartId);
       default:
         return this.renderGenericChart(canvasId, chartData, chartId);
     }
@@ -644,6 +485,8 @@ export default class ChartDisplay {
   }
   
   renderUtilizationChart(canvasId, data) {
+    console.log("renderUtilizationChart called with data:", data);
+    
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
       console.error(`Canvas ${canvasId} not found`);
@@ -653,9 +496,95 @@ export default class ChartDisplay {
     // Create a very simple horizontal bar chart
     const labels = data.map(item => item.asset);
     const values = data.map(item => parseFloat(item.utilization_percentage || 0));
-    const limits = data.map(item => parseFloat(item.max_limit || 0));
     
-    // Create chart with minimal configuration
+    // Parse limits and handle "Infinity" strings and very large values
+    const limits = data.map(item => {
+      if (item.max_limit === "Infinity" || item.max_limit === "∞") {
+        return Infinity;
+      }
+      const limit = parseFloat(item.max_limit || 0);
+      return limit > 1e12 ? Infinity : limit;
+    });
+    
+    // Create a custom plugin to add percentage and limit labels on bars
+    const percentageLabelsPlugin = {
+      id: 'percentageLabels',
+      afterDatasetsDraw(chart, args, options) {
+        const { ctx } = chart;
+        
+        for (let i = 0; i < chart.getDatasetMeta(0).data.length; i++) {
+          const value = values[i];
+          const limit = limits[i];
+          
+          const bar = chart.getDatasetMeta(0).data[i];
+          
+          // Get bar dimensions
+          const barWidth = bar.width;
+          const barHeight = bar.height;
+          
+          // Format limit text
+          let limitText = '';
+          if (limit !== undefined) {
+            if (limit === Infinity) {
+              limitText = 'No Deposit Limits';
+            } else if (limit >= 1e9) {
+              limitText = `${(limit/1e9).toFixed(1)}B`;
+            } else if (limit >= 1e6) {
+              limitText = `${(limit/1e6).toFixed(1)}M`;
+            } else if (limit >= 1e3) {
+              limitText = `${(limit/1e3).toFixed(1)}K`;
+            } else {
+              limitText = `${limit.toFixed(0)}`;
+            }
+          }
+          
+          // Determine what category the bar is in based on its color/value
+          const isRedBar = value >= 90;
+          const isGreenBar = value >= 30 && value < 90;
+          const isBlueBar = value < 30;
+          
+          // Draw percentage
+          ctx.save();
+          
+          // Red bars - percentage and limit inside the bar
+          if (isRedBar) {
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText(`${value.toFixed(1)}% (Max: ${limitText})`, bar.x - barWidth/2, bar.y);
+          } 
+          // Green bars - percentage inside, limit outside
+          else if (isGreenBar) {
+            // Draw percentage inside bar
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText(`${value.toFixed(1)}%`, bar.x - barWidth/2, bar.y);
+            
+            // Draw limit to the right of bar
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 13px Arial'; // Slightly smaller for the limit
+            ctx.fillText(`(Max: ${limitText})`, bar.x + 8, bar.y);
+          } 
+          // Blue bars - everything outside
+          else if (isBlueBar) {
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText(`${value.toFixed(1)}% (Max: ${limitText})`, bar.x + (barWidth/2) + 3, bar.y);
+          }
+          
+          ctx.restore();
+        }
+      }
+    };
+    
+    // Create chart with simplified borderRadius
     const chart = new Chart(canvas, {
       type: 'bar',
       data: {
@@ -669,11 +598,12 @@ export default class ChartDisplay {
             return '#3b82f6';              // Blue for low
           }),
           borderWidth: 0,
-          borderRadius: 4
+          borderRadius: 12,     // Simple number for compatibility
+          barThickness: 18      // Fixed height in pixels
         }]
       },
       options: {
-        indexAxis: 'y',
+        indexAxis: 'y',         // Horizontal bars
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -686,19 +616,21 @@ export default class ChartDisplay {
                 const limit = limits[index];
                 
                 let limitText = '';
-                if (limit) {
-                  if (limit >= 1e9) {
-                    limitText = ` (Max: $${(limit/1e9).toFixed(1)}B)`;
+                if (limit !== undefined) {
+                  if (limit === Infinity) {
+                    limitText = ` (Max: ∞)`;
+                  } else if (limit >= 1e9) {
+                    limitText = ` (Max: ${(limit/1e9).toFixed(1)}B)`;
                   } else if (limit >= 1e6) {
-                    limitText = ` (Max: $${(limit/1e6).toFixed(1)}M)`;
+                    limitText = ` (Max: ${(limit/1e6).toFixed(1)}M)`;
                   } else if (limit >= 1e3) {
-                    limitText = ` (Max: $${(limit/1e3).toFixed(1)}K)`;
+                    limitText = ` (Max: ${(limit/1e3).toFixed(1)}K)`;
                   } else {
-                    limitText = ` (Max: $${limit.toFixed(2)})`;
+                    limitText = ` (Max: ${limit.toFixed(0)})`;
                   }
                 }
                 
-                return `Utilization: ${value.toFixed(2)}%${limitText}`;
+                return `Utilization: ${value.toFixed(1)}%${limitText}`;
               }
             }
           }
@@ -707,17 +639,11 @@ export default class ChartDisplay {
           x: {
             beginAtZero: true,
             max: 100,
-            title: {
-              display: true,
-              text: 'Utilization %',
-              color: '#64748b',
-              font: {
-                size: 12,
-                weight: 'normal'
-              }
-            },
             ticks: {
-              callback: (value) => `${value}%`
+              stepSize: 20,
+              callback: function(value) {
+                return value + '%';
+              }
             }
           },
           y: {
@@ -726,117 +652,15 @@ export default class ChartDisplay {
             }
           }
         }
-      }
-    });
-    
-    // Register for export
-    ChartRegistry.register(canvasId, chart);
-    ChartExportUtils.registerChart(canvasId, chart);
-    
-    return chart;
-  }
-  
-  renderBarChart(canvasId, data, chartId) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-      console.error(`Canvas ${canvasId} not found`);
-      return null;
-    }
-    
-    // Extract data based on common patterns
-    let labels = [];
-    let values = [];
-    let labelKey = 'label';
-    let valueKey = 'value';
-    
-    // Operators sections
-    if (chartId === 'distribution' || chartId === 'vault_and_collateral_counts') {
-      labelKey = 'operator_id' in data[0] ? 'label' : 'name';
-      valueKey = chartId === 'distribution' ? 'usd_value' : 'vault_count';
-    } 
-    // Curators section
-    else if (chartId === 'vault_and_collateral_counts' && data[0].curator_id) {
-      labelKey = 'curator_id';
-      valueKey = 'vault_count';
-    }
-    
-    // Extract data
-    data.forEach(item => {
-      // Use fallbacks for key names
-      const label = item[labelKey] || item.name || item.label || item.operator_id || item.curator_id || 'Unknown';
-      
-      // For value, try different common keys
-      let value = item[valueKey];
-      if (value === undefined) {
-        // Try fallbacks
-        value = item.percentage || item.value || item.usd_value || item.vault_count || 0;
-      }
-      
-      labels.push(label);
-      values.push(parseFloat(value));
-    });
-    
-    // Create chart
-    const chart = new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: '#8247e5',
-          borderWidth: 0,
-          borderRadius: 4
-        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const value = context.raw || 0;
-                if (valueKey.includes('usd') || chartId.includes('distribution')) {
-                  if (value >= 1e9) return `$${(value/1e9).toFixed(2)}B`;
-                  if (value >= 1e6) return `$${(value/1e6).toFixed(2)}M`;
-                  if (value >= 1e3) return `$${(value/1e3).toFixed(2)}K`;
-                  return `$${value.toFixed(2)}`;
-                }
-                return value.toLocaleString();
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                if (valueKey.includes('usd') || chartId.includes('distribution')) {
-                  if (value >= 1e9) return `$${(value/1e9).toFixed(1)}B`;
-                  if (value >= 1e6) return `$${(value/1e6).toFixed(1)}M`;
-                  if (value >= 1e3) return `$${(value/1e3).toFixed(1)}K`;
-                  return `$${value}`;
-                }
-                return value;
-              }
-            }
-          }
-        }
-      }
+      plugins: [percentageLabelsPlugin]  // Add our custom plugin
     });
     
-    // Register for export
     ChartRegistry.register(canvasId, chart);
     ChartExportUtils.registerChart(canvasId, chart);
     
     return chart;
   }
-  
-  
-  
-  
   
   renderGenericChart(canvasId, data, chartId) {
     // Fallback for any other chart type
@@ -958,114 +782,85 @@ export default class ChartDisplay {
       .join(' ');
   }
 
-    // From ChartDisplay.js
-    renderVaultChart(canvasId, data, chartId) {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) {
-        console.error(`Canvas ${canvasId} not found`);
-        return null;
-      }
-  
-      // Convert object data to arrays for Chart.js
-      const labels = Object.keys(data);
-      const values = Object.values(data).map(val => parseFloat(val));
-  
-      // Define colors based on chart type
-      let colors;
-      if (chartId === 'slasher_configuration') {
-        // Use green theme for Slasher Configuration
-        // Ensure enough colors if there can be more than one type
-        colors = ['#10b981', '#34d399', '#6ee7b7'];
-      } else {
-        // Use purple/blue theme for Delegator Configuration
-        colors = ['#6366f1', '#a855f7', '#c084fc']; // Blue and purple shades
-      }
-  
-      // Ensure colors array matches data length or repeats safely
-      const backgroundColors = values.map((_, i) => colors[i % colors.length]);
-  
-  
-      // Create the chart
-      const chart = new Chart(canvas, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            backgroundColor: backgroundColors, // Use generated colors
-            borderWidth: 0, // No border for cleaner look
-            // borderColor: '#ffffff' // Optional: Add white border if needed
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%', // Make the donut hole larger
-          plugins: {
-            // Disable the other pieLabels plugin if it exists and is enabled globally
-            pieLabels: {
-               enabled: false
-            },
-            legend: {
-              position: 'bottom',
-              labels: {
-                padding: 20,
-                font: {
-                  size: 12
-                }
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const label = context.label || '';
-                  const value = context.raw || 0;
-                  // Ensure value is treated as number for formatting
-                  return `${label}: ${Number(value).toFixed(2)}%`;
-                }
-              }
-            },
-            // Configure chartjs-plugin-datalabels
-            datalabels: {
-              display: true, // Explicitly enable display
-              formatter: (value, context) => {
-                // *** DEBUGGING LINE ***
-                console.log(`Datalabels formatter called for ${context.chart.canvas.id}, label: ${context.chart.data.labels[context.dataIndex]}, value: ${value}`);
-                // Ensure value is treated as number before formatting
-                const numericValue = Number(value);
-                if (isNaN(numericValue)) {
-                    return ''; // Don't display if value is not a number
-                }
-                // Only display if value > 0 to avoid cluttering 0% labels? (Optional)
-                // if (numericValue <= 0) {
-                //     return '';
-                // }
-                return `${numericValue.toFixed(2)}%`;
-              },
-              color: '#ffffff', // White text
-              font: {
-                weight: 'bold',
-                size: 14 // Slightly reduced size just in case
-              },
-              anchor: 'center', // Anchor in the middle of the arc segment
-              align: 'center', // Align text in the middle of the anchor
-              offset: 0, // No offset from the anchor point
-              // Optional: Add padding if text touches edges
-              // padding: 4
-            }
-          }
-        },
-        // Ensure plugin is passed if not registered globally, otherwise this might cause issues if already global
-        // If 'ChartDataLabels' is globally registered via Chart.register(ChartDataLabels), remove this line.
-        // If it's NOT globally registered, keep this line and ensure ChartDataLabels is imported correctly.
-        plugins: [ChartDataLabels]
-      });
-  
-      // Register for export
-      ChartRegistry.register(canvasId, chart);
-      ChartExportUtils.registerChart(canvasId, chart);
-  
-      return chart;
+  renderVaultChart(canvasId, data, chartId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+      console.error(`Canvas ${canvasId} not found`);
+      return null;
     }
-  
+
+    // Convert object data to arrays for Chart.js
+    const labels = Object.keys(data);
+    const values = Object.values(data).map(val => parseFloat(val));
+
+    // Define colors based on chart type
+    let colors;
+    if (chartId === 'slasher_configuration') {
+      colors = ['#10b981']; // Green for Slasher (seems to be single value)
+    } else {
+      colors = ['#6366f1', '#a855f7']; // Blue and purple for Delegator
+    }
+
+    // Create the chart
+    const chart = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%', // Consistent cutout percentage
+        layout: {
+          padding: 20
+        },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return `${label}: ${Number(value).toFixed(2)}%`;
+              }
+            }
+          },
+          datalabels: {
+            display: true,
+            formatter: (value) => {
+              return `${Number(value).toFixed(2)}%`;
+            },
+            color: '#ffffff',
+            font: {
+              weight: 'bold',
+              size: 14
+            },
+            anchor: 'center',
+            align: 'center'
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    // Consistent size for both charts
+    canvas.parentNode.style.height = '400px';
+
+    // Register for export
+    ChartRegistry.register(canvasId, chart);
+    ChartExportUtils.registerChart(canvasId, chart);
+
+    return chart;
+  }
 }

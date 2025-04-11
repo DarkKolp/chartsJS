@@ -119,6 +119,21 @@
   height: 100%;
 }
 
+.charts-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 20px 0;
+}
+
+.charts-row .chart-card {
+  flex: 1 1 450px; /* Grow, shrink, basis */
+  min-width: 450px;
+  max-width: 100%;
+}
+
+
 .chart-card .chart-title {
   font-size: 18px;
   font-weight: 600;
