@@ -114,7 +114,9 @@
 }
 
 .chart-card canvas {
-  max-height: 350px;
+  display: block; /* Prevents extra space below canvas */
+  width: 100%;
+  height: 100%;
 }
 
 .chart-card .chart-title {
@@ -186,7 +188,6 @@
 .canvas-container {
   position: relative;
   width: 100%;
-  height: 350px;
 }
 
 .chart-controls {
@@ -208,6 +209,10 @@
 
 .export-btn:hover {
   background-color: #e2e8f0;
+}
+
+.vault-count-chart-container {
+  aspect-ratio: 1.5; /* Or use fraction: 3 / 2; */
 }
 
 .datalabels {

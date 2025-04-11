@@ -78,37 +78,53 @@ export default class ChartDisplay {
   
   createChartCard(container, chartId, chartData, index) {
     const { selectedCategory } = appState.getState();
-    
+
     // Create card
     const card = document.createElement('div');
     card.className = 'chart-card';
-    card.style.marginBottom = '40px'; // Add space between charts
-    card.style.minHeight = '400px'; // Increase height for better visibility
-    
+    // Removed fixed min-height from original example for flexibility
+    // card.style.minHeight = '400px';
+    card.style.marginBottom = '40px'; // Keep space between charts
+
     // Add title
     const title = document.createElement('h3');
     title.className = 'chart-title';
     title.textContent = this.formatChartTitle(chartId);
     card.appendChild(title);
-    
+
+    // --- Modifications Start Here ---
+
     // Create canvas container
     const canvasContainer = document.createElement('div');
+    // Set base class for all chart containers
     canvasContainer.className = 'canvas-container';
-    canvasContainer.style.height = '350px'; // Increase height
-    
+
+    // ** IMPORTANT: Remove the fixed inline height **
+    // canvasContainer.style.height = '350px'; // REMOVED/COMMENTED OUT
+
+    // ** CONDITIONALLY add the specific class for aspect ratio **
+    // Add other chart IDs here if needed, e.g., if (chartId === '...' || chartId === '...')
+    if (chartId === 'vault_and_collateral_counts') {
+      canvasContainer.classList.add('vault-count-chart-container');
+      console.log(`Added vault-count-chart-container class to ${chartId}`); // For debugging
+    }
+
+    // --- Modifications End Here ---
+
     // Create canvas
     const canvas = document.createElement('canvas');
     const canvasId = `chart-${selectedCategory}-${index}`;
     canvas.id = canvasId;
+    // Append canvas *after* potentially adding the class to the container
     canvasContainer.appendChild(canvas);
     card.appendChild(canvasContainer);
-    
+
     // Add card to container
     container.appendChild(card);
-    
+
     // Determine chart type and render
     const chart = this.renderChartByType(canvasId, chartId, chartData, selectedCategory);
-    
+
     // Add export controls after chart is rendered
     if (chart) {
       ChartExportUtils.addExportControls(card, canvasId, this.formatChartTitle(chartId));
@@ -128,7 +144,7 @@ export default class ChartDisplay {
     
     // Improved label extraction
     let labels = data.map(item => {
-      return item.curator_id || item.label || item.name || 'Unknown';
+      return item.asset || item.curator_id || item.label || item.name || 'Unknown';
     });
     
     let values = data.map(item => parseFloat(item.percentage || item.value || 0));
@@ -404,80 +420,79 @@ export default class ChartDisplay {
       console.error(`Canvas ${canvasId} not found`);
       return null;
     }
-    
-    // Prepare data
+
+    // Prepare data (Grouping logic remains the same)
     const entities = [];
     const vaultCounts = [];
     const collateralCounts = [];
-    
+
     // Get list of small entities from distribution chart
     let smallEntities = [];
     if (chartId === 'vault_and_collateral_counts') {
-      // If we're in the Operators or Curators section, get the distribution data
       const { networkData, selectedCategory } = appState.getState();
       if (networkData && networkData[selectedCategory] && networkData[selectedCategory].charts) {
         const distributionData = networkData[selectedCategory].charts.distribution;
         if (distributionData && Array.isArray(distributionData)) {
-          // Calculate total
           const total = distributionData.reduce((sum, item) => sum + parseFloat(item.percentage || 0), 0);
-          
-          // Identify small entities (<5%)
-          distributionData.forEach(item => {
-            const percentage = (parseFloat(item.percentage || 0) / total) * 100;
-            if (percentage < 5) {
-              const label = selectedCategory === 'operators' ? item.label : item.curator_id;
-              smallEntities.push(label);
-            }
-          });
+          if (total > 0) {
+             distributionData.forEach(item => {
+                const percentage = (parseFloat(item.percentage || 0) / total) * 100;
+                if (percentage < 5) {
+                  const label = selectedCategory === 'operators'
+                     ? (item.label || item.operator_id)
+                     : (item.curator_id || item.label);
+                  if (label) {
+                     smallEntities.push(label);
+                  }
+                }
+             });
+          }
         }
       }
     }
-    
-    // Process data for main entities
+
+    // Process data for main entities and group others
     const mainEntities = [];
     const othersData = {
       vaultTotal: 0,
       collateralTotal: 0,
       count: 0
     };
-    
+
     data.forEach(item => {
       const label = item.label || item.operator_id || item.curator_id || 'Unknown';
       const vaultCount = parseInt(item.vault_count || 0);
       const collateralCount = parseInt(item.collateral_type_count || 0);
-      
-      // Check if this entity is in the small entities list
+
       if (smallEntities.includes(label)) {
-        // Add to Others group
         othersData.vaultTotal += vaultCount;
         othersData.collateralTotal += collateralCount;
         othersData.count++;
       } else {
-        // Add as a main entity
         mainEntities.push({ label, vaultCount, collateralCount });
       }
     });
-    
+
     // Sort entities by vault count (descending)
     mainEntities.sort((a, b) => b.vaultCount - a.vaultCount);
-    
+
     // Add entities and their data
     mainEntities.forEach(entity => {
       entities.push(entity.label);
       vaultCounts.push(entity.vaultCount);
       collateralCounts.push(entity.collateralCount);
     });
-    
+
     // Add Others mean if there are any
     if (othersData.count > 0) {
-      entities.push('Other (mean)');
+      entities.push(`Other (${othersData.count} mean)`);
       vaultCounts.push(Math.round(othersData.vaultTotal / othersData.count));
       collateralCounts.push(Math.round(othersData.collateralTotal / othersData.count));
     }
-    
+
     // Create chart
     const chart = new Chart(canvas, {
-      type: 'bar',
+      type: 'bar', // Vertical bar chart
       data: {
         labels: entities,
         datasets: [
@@ -486,14 +501,20 @@ export default class ChartDisplay {
             data: vaultCounts,
             backgroundColor: '#8247e5', // Purple
             borderWidth: 0,
-            borderRadius: 4
+            borderRadius: 4,
+            // *** ADJUSTED FOR COMPACTNESS ***
+            categoryPercentage: 0.85, // Use 85% of the category width (reduces space BETWEEN categories)
+            barPercentage: 0.7       // Keep bar width relative to its slot
           },
           {
             label: 'Collateral Count',
             data: collateralCounts,
             backgroundColor: '#3b82f6', // Blue
             borderWidth: 0,
-            borderRadius: 4
+            borderRadius: 4,
+            // *** ADJUSTED FOR COMPACTNESS ***
+            categoryPercentage: 0.85, // Use 85% of the category width (reduces space BETWEEN categories)
+            barPercentage: 0.7       // Keep bar width relative to its slot
           }
         ]
       },
@@ -507,6 +528,10 @@ export default class ChartDisplay {
               boxWidth: 12,
               font: { size: 12 }
             }
+          },
+          tooltip: {
+             mode: 'index',
+             intersect: false
           }
         },
         scales: {
@@ -518,23 +543,31 @@ export default class ChartDisplay {
               font: { size: 12 }
             },
             ticks: {
-              precision: 0 // Show integers only
+              precision: 0
+            },
+            grid: {
+              display: true,
+              color: 'rgba(226, 232, 240, 0.6)'
             }
           },
           x: {
             grid: {
-              display: true,
-              color: 'rgba(226, 232, 240, 0.6)'
+              display: false // Keep vertical grid lines off
+            },
+            ticks: {
+               // Keep rotation
+               maxRotation: 45,
+               minRotation: 45
             }
           }
         }
       }
     });
-    
+
     // Register for export
     ChartRegistry.register(canvasId, chart);
     ChartExportUtils.registerChart(canvasId, chart);
-    
+
     return chart;
   }
   
@@ -925,87 +958,114 @@ export default class ChartDisplay {
       .join(' ');
   }
 
-  renderVaultChart(canvasId, data, chartId) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-      console.error(`Canvas ${canvasId} not found`);
-      return null;
-    }
-    
-    // Convert object data to arrays for Chart.js
-    const labels = Object.keys(data);
-    const values = Object.values(data).map(val => parseFloat(val));
-    
-    // Define colors based on chart type
-    let colors;
-    if (chartId === 'slasher_configuration') {
-      // Use green theme for Slasher Configuration
-      colors = ['#10b981']; // Single shade of green since there's only one value
-    } else {
-      // Use purple/blue theme for Delegator Configuration
-      colors = ['#6366f1', '#a855f7']; // Blue and purple
-    }
-    
-    // Create the chart
-    const chart = new Chart(canvas, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors,
-          borderWidth: 0,
-          borderColor: '#ffffff'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '70%', // Make the donut hole larger
-        plugins: {
-          pieLabels: {
-            enabled: false
-          },
-          legend: {
-            position: 'bottom',
-            labels: {
-              padding: 20,
-              font: {
-                size: 12
-              }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                return `${label}: ${value.toFixed(2)}%`;
-              }
-            }
-          },
-          // Add percentage in center using the datalabels plugin
-          datalabels: {
-            formatter: (value) => {
-              return `${value.toFixed(2)}%`;
-            },
-            color: '#ffffff',
-            font: {
-              weight: 'bold',
-              size: 16
-            },
-            anchor: 'center',
-            align: 'center',
-            offset: 0
-          }
-        }
+    // From ChartDisplay.js
+    renderVaultChart(canvasId, data, chartId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) {
+        console.error(`Canvas ${canvasId} not found`);
+        return null;
       }
-    });
-    
-    // Register for export
-    ChartRegistry.register(canvasId, chart);
-    ChartExportUtils.registerChart(canvasId, chart);
-    
-    return chart;
-  }  
+  
+      // Convert object data to arrays for Chart.js
+      const labels = Object.keys(data);
+      const values = Object.values(data).map(val => parseFloat(val));
+  
+      // Define colors based on chart type
+      let colors;
+      if (chartId === 'slasher_configuration') {
+        // Use green theme for Slasher Configuration
+        // Ensure enough colors if there can be more than one type
+        colors = ['#10b981', '#34d399', '#6ee7b7'];
+      } else {
+        // Use purple/blue theme for Delegator Configuration
+        colors = ['#6366f1', '#a855f7', '#c084fc']; // Blue and purple shades
+      }
+  
+      // Ensure colors array matches data length or repeats safely
+      const backgroundColors = values.map((_, i) => colors[i % colors.length]);
+  
+  
+      // Create the chart
+      const chart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: backgroundColors, // Use generated colors
+            borderWidth: 0, // No border for cleaner look
+            // borderColor: '#ffffff' // Optional: Add white border if needed
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%', // Make the donut hole larger
+          plugins: {
+            // Disable the other pieLabels plugin if it exists and is enabled globally
+            pieLabels: {
+               enabled: false
+            },
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                font: {
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  // Ensure value is treated as number for formatting
+                  return `${label}: ${Number(value).toFixed(2)}%`;
+                }
+              }
+            },
+            // Configure chartjs-plugin-datalabels
+            datalabels: {
+              display: true, // Explicitly enable display
+              formatter: (value, context) => {
+                // *** DEBUGGING LINE ***
+                console.log(`Datalabels formatter called for ${context.chart.canvas.id}, label: ${context.chart.data.labels[context.dataIndex]}, value: ${value}`);
+                // Ensure value is treated as number before formatting
+                const numericValue = Number(value);
+                if (isNaN(numericValue)) {
+                    return ''; // Don't display if value is not a number
+                }
+                // Only display if value > 0 to avoid cluttering 0% labels? (Optional)
+                // if (numericValue <= 0) {
+                //     return '';
+                // }
+                return `${numericValue.toFixed(2)}%`;
+              },
+              color: '#ffffff', // White text
+              font: {
+                weight: 'bold',
+                size: 14 // Slightly reduced size just in case
+              },
+              anchor: 'center', // Anchor in the middle of the arc segment
+              align: 'center', // Align text in the middle of the anchor
+              offset: 0, // No offset from the anchor point
+              // Optional: Add padding if text touches edges
+              // padding: 4
+            }
+          }
+        },
+        // Ensure plugin is passed if not registered globally, otherwise this might cause issues if already global
+        // If 'ChartDataLabels' is globally registered via Chart.register(ChartDataLabels), remove this line.
+        // If it's NOT globally registered, keep this line and ensure ChartDataLabels is imported correctly.
+        plugins: [ChartDataLabels]
+      });
+  
+      // Register for export
+      ChartRegistry.register(canvasId, chart);
+      ChartExportUtils.registerChart(canvasId, chart);
+  
+      return chart;
+    }
+  
 }
