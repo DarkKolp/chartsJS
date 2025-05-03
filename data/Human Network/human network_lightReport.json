@@ -1,0 +1,373 @@
+{
+  "network": {
+    "id": "0x42F15F9E4dF4994317453477e80e24797CC1A929",
+    "name": "Human Network",
+    "timestamp": 1746280062,
+    "date": "2025-05-03 14:47:42"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 215427228.85597295,
+      "key_assets": [
+        "ETH",
+        "BTC",
+        "sUSD"
+      ],
+      "top_collaterals": [
+        "wstETH",
+        "LBTC"
+      ],
+      "fully_utilized_collaterals": []
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "swETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "cbETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "wBETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "rETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "WBTC",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "mETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "LBTC",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "sUSDe",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        },
+        {
+          "asset": "LsETH",
+          "utilization_percentage": 0,
+          "max_limit": "unlimited"
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 175691284.40836692,
+          "percentage": 81.55
+        },
+        {
+          "asset": "LBTC",
+          "usd_value": 19284586.642253105,
+          "percentage": 8.95
+        },
+        {
+          "asset": "LsETH",
+          "usd_value": 7077483.835126387,
+          "percentage": 3.29
+        },
+        {
+          "asset": "swETH",
+          "usd_value": 4508087.679212983,
+          "percentage": 2.09
+        },
+        {
+          "asset": "cbETH",
+          "usd_value": 4183886.415575819,
+          "percentage": 1.94
+        },
+        {
+          "asset": "wBETH",
+          "usd_value": 2158336.902161644,
+          "percentage": 1.0
+        },
+        {
+          "asset": "rETH",
+          "usd_value": 1559510.9755061015,
+          "percentage": 0.72
+        },
+        {
+          "asset": "mETH",
+          "usd_value": 747695.7014500191,
+          "percentage": 0.35
+        },
+        {
+          "asset": "sUSDe",
+          "usd_value": 150101.17943601927,
+          "percentage": 0.07
+        },
+        {
+          "asset": "WBTC",
+          "usd_value": 66255.1168839,
+          "percentage": 0.03
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 10,
+        "opted_in_count": 21,
+        "percentage": 47.61904761904761
+      },
+      "top_operators": {
+        "top_3_percentage": 71.30571425754374,
+        "top_5_percentage": 94.12129050190339
+      },
+      "gini_index": 0.561103755125456
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 68516853.27480674,
+          "percentage": 31.81
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "usd_value": 44646971.54382939,
+          "percentage": 20.72
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "usd_value": 40448099.422348715,
+          "percentage": 18.78
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 35364721.874555744,
+          "percentage": 16.42
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 13786241.776189918,
+          "percentage": 6.4
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "usd_value": 5083377.547792974,
+          "percentage": 2.36
+        },
+        {
+          "operator_id": "0xcf28Fe3A1B73887e405bf955Bf52D9341F666CAa",
+          "label": "BwareLabs",
+          "usd_value": 2736708.4893250843,
+          "percentage": 1.27
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "usd_value": 2565620.8962362367,
+          "percentage": 1.19
+        },
+        {
+          "operator_id": "0xc937B7Be5a4200e9E9C880b5710dAb5D11c31b18",
+          "label": "Stake Capital",
+          "usd_value": 2049099.8284247322,
+          "percentage": 0.95
+        },
+        {
+          "operator_id": "0x4B9F8FEbAfDeD90E66C9896B729196a061d69B2F",
+          "label": "Ryabina",
+          "usd_value": 229534.20246339397,
+          "percentage": 0.11
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "vault_count": 13,
+          "collateral_type_count": 8
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 13,
+          "collateral_type_count": 9
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 8,
+          "collateral_type_count": 7
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "vault_count": 7,
+          "collateral_type_count": 6
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 7,
+          "collateral_type_count": 6
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "vault_count": 6,
+          "collateral_type_count": 5
+        },
+        {
+          "operator_id": "0xcf28Fe3A1B73887e405bf955Bf52D9341F666CAa",
+          "label": "BwareLabs",
+          "vault_count": 4,
+          "collateral_type_count": 3
+        },
+        {
+          "operator_id": "0x4B9F8FEbAfDeD90E66C9896B729196a061d69B2F",
+          "label": "Ryabina",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xc937B7Be5a4200e9E9C880b5710dAb5D11c31b18",
+          "label": "Stake Capital",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 21,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 76.19047619047619,
+          "OperatorSpecific": 23.809523809523807
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 7,
+      "network_max_limit_gini_index": 0.5714285714285714,
+      "max_limit_top_bottom_ratio": 1000000,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "MEV_Capital",
+          "usd_value": 68156758.4551798,
+          "percentage": 31.64
+        },
+        {
+          "curator_id": "re7_Labs",
+          "usd_value": 63352730.96397299,
+          "percentage": 29.41
+        },
+        {
+          "curator_id": "Renzo",
+          "usd_value": 60401199.12744398,
+          "percentage": 28.04
+        },
+        {
+          "curator_id": "Gauntlet",
+          "usd_value": 20656489.243335005,
+          "percentage": 9.59
+        },
+        {
+          "curator_id": "cp0x",
+          "usd_value": 2565620.8962362367,
+          "percentage": 1.19
+        },
+        {
+          "curator_id": "Ryabina",
+          "usd_value": 229534.20246339397,
+          "percentage": 0.11
+        },
+        {
+          "curator_id": "Alchemy",
+          "usd_value": 64895.96734154064,
+          "percentage": 0.03
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "MEV_Capital",
+          "vault_count": 7,
+          "collateral_type_count": 6
+        },
+        {
+          "curator_id": "Gauntlet",
+          "vault_count": 6,
+          "collateral_type_count": 6
+        },
+        {
+          "curator_id": "re7_Labs",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "Ryabina",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "Alchemy",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "cp0x",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Renzo",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

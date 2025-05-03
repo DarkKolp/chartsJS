@@ -1,0 +1,459 @@
+{
+  "network": {
+    "id": "0x3a7B173124DcFeCff1847FF7f8f56e72ABE02340",
+    "name": "Kalypso",
+    "timestamp": 1745925183,
+    "date": "2025-04-29 12:13:03"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 115010395.29614952,
+      "key_assets": [
+        "ETH",
+        "BTC",
+        "POND"
+      ],
+      "top_collaterals": [
+        "wstETH",
+        "WBTC"
+      ],
+      "fully_utilized_collaterals": [
+        "wstETH"
+      ]
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 97.47,
+          "max_limit": 45209.0
+        },
+        {
+          "asset": "POND",
+          "utilization_percentage": 90.5,
+          "max_limit": 650000000.0
+        },
+        {
+          "asset": "WBTC",
+          "utilization_percentage": 34.85,
+          "max_limit": 381.0
+        },
+        {
+          "asset": "uniBTC",
+          "utilization_percentage": 0.0,
+          "max_limit": 50.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 96784471.5242125,
+          "percentage": 84.15
+        },
+        {
+          "asset": "WBTC",
+          "usd_value": 12502772.818503201,
+          "percentage": 10.87
+        },
+        {
+          "asset": "POND",
+          "usd_value": 5723150.953433826,
+          "percentage": 4.98
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 20,
+        "opted_in_count": 29,
+        "percentage": 68.96551724137932
+      },
+      "top_operators": {
+        "top_3_percentage": 62.90777118321282,
+        "top_5_percentage": 84.83804574662075
+      },
+      "gini_index": 0.6709308015778381
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 29068608.391992886,
+          "percentage": 25.27
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "usd_value": 23254859.566097423,
+          "percentage": 20.22
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "usd_value": 20027008.351720005,
+          "percentage": 17.41
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 14224973.339641899,
+          "percentage": 12.37
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 10997122.125264483,
+          "percentage": 9.56
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "usd_value": 3514791.0380587713,
+          "percentage": 3.06
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "usd_value": 1763112.0078532114,
+          "percentage": 1.53
+        },
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "usd_value": 1250277.28185032,
+          "percentage": 1.09
+        },
+        {
+          "operator_id": "0x2A21EaAe1519D852296a158549416442fbb1fdD2",
+          "label": "Finoa Consensus Services",
+          "usd_value": 1250277.28185032,
+          "percentage": 1.09
+        },
+        {
+          "operator_id": "0x5d24dBA4ccdE2C5B7bC5b609c6a3D5150acB9447",
+          "label": "Stakin",
+          "usd_value": 1250277.28185032,
+          "percentage": 1.09
+        },
+        {
+          "operator_id": "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5",
+          "label": "Stakely",
+          "usd_value": 1250277.28185032,
+          "percentage": 1.09
+        },
+        {
+          "operator_id": "0xe8e54EA992a3f8aaED7f05de7C1487855674A3cf",
+          "label": "HashKey Cloud",
+          "usd_value": 1250277.28185032,
+          "percentage": 1.09
+        },
+        {
+          "operator_id": "0xEe92C0CeF065819BFE17A5626b8209f64D82971e",
+          "label": "Block'n'Bones",
+          "usd_value": 953858.4922389709,
+          "percentage": 0.83
+        },
+        {
+          "operator_id": "0x69F5a3458b42d3162B64b6457cCFFde00abD2F09",
+          "label": "Encapsulate",
+          "usd_value": 953858.4922389709,
+          "percentage": 0.83
+        },
+        {
+          "operator_id": "0x9A9b849A8d099B4D233928c7EF396680D5a90E19",
+          "label": "Staketab",
+          "usd_value": 953858.4922389709,
+          "percentage": 0.83
+        },
+        {
+          "operator_id": "0x9b43f5ae15cE7443cc6ddDdE0e819d8FA8533F9A",
+          "label": "CertiK",
+          "usd_value": 953858.4922389709,
+          "percentage": 0.83
+        },
+        {
+          "operator_id": "0xcb87997fFC85d66Df1e919D37c931cfA217f28A6",
+          "label": "Unknown",
+          "usd_value": 953858.4922389709,
+          "percentage": 0.83
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "usd_value": 840868.8037453778,
+          "percentage": 0.73
+        },
+        {
+          "operator_id": "0xc937B7Be5a4200e9E9C880b5710dAb5D11c31b18",
+          "label": "Stake Capital",
+          "usd_value": 162748.80072491182,
+          "percentage": 0.14
+        },
+        {
+          "operator_id": "0xcf28Fe3A1B73887e405bf955Bf52D9341F666CAa",
+          "label": "BwareLabs",
+          "usd_value": 135624.0006040932,
+          "percentage": 0.12
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "vault_count": 2,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x2A21EaAe1519D852296a158549416442fbb1fdD2",
+          "label": "Finoa Consensus Services",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x5d24dBA4ccdE2C5B7bC5b609c6a3D5150acB9447",
+          "label": "Stakin",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x57A58ff6f5724d29C05a4d0B29d07b82817C50D5",
+          "label": "Stakely",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xe8e54EA992a3f8aaED7f05de7C1487855674A3cf",
+          "label": "HashKey Cloud",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xEe92C0CeF065819BFE17A5626b8209f64D82971e",
+          "label": "Block'n'Bones",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x69F5a3458b42d3162B64b6457cCFFde00abD2F09",
+          "label": "Encapsulate",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x9A9b849A8d099B4D233928c7EF396680D5a90E19",
+          "label": "Staketab",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x9b43f5ae15cE7443cc6ddDdE0e819d8FA8533F9A",
+          "label": "CertiK",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xcb87997fFC85d66Df1e919D37c931cfA217f28A6",
+          "label": "Unknown",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xc937B7Be5a4200e9E9C880b5710dAb5D11c31b18",
+          "label": "Stake Capital",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xcf28Fe3A1B73887e405bf955Bf52D9341F666CAa",
+          "label": "BwareLabs",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 11,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 10,
+      "network_max_limit_gini_index": 0.5758041068507884,
+      "max_limit_top_bottom_ratio": 12.64341463414634,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "Renzo",
+          "usd_value": 54214458.8001852,
+          "percentage": 42.52
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "usd_value": 27124800.120818637,
+          "percentage": 21.27
+        },
+        {
+          "curator_id": "Gauntlet",
+          "usd_value": 15215252.830585064,
+          "percentage": 11.93
+        },
+        {
+          "curator_id": "Swell",
+          "usd_value": 12502772.818503201,
+          "percentage": 9.81
+        },
+        {
+          "curator_id": "Marlin",
+          "usd_value": 5723150.953433826,
+          "percentage": 4.49
+        },
+        {
+          "curator_id": "re7_Labs",
+          "usd_value": 4746840.021143261,
+          "percentage": 3.72
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "usd_value": 2712480.012081864,
+          "percentage": 2.13
+        },
+        {
+          "curator_id": "MEV_Capital",
+          "usd_value": 2712480.0120818634,
+          "percentage": 2.13
+        },
+        {
+          "curator_id": "cp0x",
+          "usd_value": 2560932.5458198003,
+          "percentage": 2.01
+        },
+        {
+          "curator_id": "RockX",
+          "usd_value": 0,
+          "percentage": 0.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "Gauntlet",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "re7_Labs",
+          "vault_count": 2,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "cp0x",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Swell",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Marlin",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "MEV_Capital",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "RockX",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Renzo",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

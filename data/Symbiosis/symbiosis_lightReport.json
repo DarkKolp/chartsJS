@@ -1,0 +1,269 @@
+{
+  "network": {
+    "id": "0x5112EbA9bc2468Bb5134CBfbEAb9334EdaE7106a",
+    "name": "Symbiosis",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 10377727.599140445,
+      "key_assets": [
+        "ETH",
+        "SIS"
+      ],
+      "top_collaterals": [
+        "wstETH",
+        "rETH"
+      ],
+      "fully_utilized_collaterals": [
+        "wstETH",
+        "rETH",
+        "SIS"
+      ]
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 4600.0
+        },
+        {
+          "asset": "rETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 100.0
+        },
+        {
+          "asset": "SIS",
+          "utilization_percentage": 100.0,
+          "max_limit": 1000000.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 10119060.77054121,
+          "percentage": 97.51
+        },
+        {
+          "asset": "rETH",
+          "usd_value": 207660.09718397813,
+          "percentage": 2.0
+        },
+        {
+          "asset": "SIS",
+          "usd_value": 51006.73141525743,
+          "percentage": 0.49
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 7,
+        "opted_in_count": 21,
+        "percentage": 33.33333333333333
+      },
+      "top_operators": {
+        "top_3_percentage": 71.80506975457754,
+        "top_5_percentage": 91.27533764081674
+      },
+      "gini_index": 0.4108165264417739
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 4194863.81803207,
+          "percentage": 40.42
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "usd_value": 1811751.680042292,
+          "percentage": 17.46
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 1445119.0434284802,
+          "percentage": 13.93
+        },
+        {
+          "operator_id": "0xAF0dbc82EDc4e893d7898Cf6a8eA2497ce859A1F",
+          "label": "QuantNode",
+          "usd_value": 1125401.2755490646,
+          "percentage": 10.84
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 895170.0885077621,
+          "percentage": 8.63
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "usd_value": 879918.3278731487,
+          "percentage": 8.48
+        },
+        {
+          "operator_id": "0x5112EbA9bc2468Bb5134CBfbEAb9334EdaE7106a",
+          "label": "Symbiosis",
+          "usd_value": 25503.36570762872,
+          "percentage": 0.25
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 3,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xAF0dbc82EDc4e893d7898Cf6a8eA2497ce859A1F",
+          "label": "QuantNode",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x9766e9e3045a8cEd5E1fa5B72AEEeEC9D74D00d0",
+          "label": "cp0x by STAKR.space",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x5112EbA9bc2468Bb5134CBfbEAb9334EdaE7106a",
+          "label": "Symbiosis",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 9,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 7,
+      "network_max_limit_gini_index": 0.747408293460925,
+      "max_limit_top_bottom_ratio": 3333.3333333333335,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "re7_Labs",
+          "usd_value": 4399591.639365744,
+          "percentage": 42.39
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "usd_value": 2199795.819682872,
+          "percentage": 21.2
+        },
+        {
+          "curator_id": "Renzo",
+          "usd_value": 1099897.909841436,
+          "percentage": 10.6
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "usd_value": 1099897.909841436,
+          "percentage": 10.6
+        },
+        {
+          "curator_id": "cp0x",
+          "usd_value": 879918.3278731487,
+          "percentage": 8.48
+        },
+        {
+          "curator_id": "Gauntlet",
+          "usd_value": 647619.2611205524,
+          "percentage": 6.24
+        },
+        {
+          "curator_id": "Symbiosis",
+          "usd_value": 51006.73141525743,
+          "percentage": 0.49
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "re7_Labs",
+          "vault_count": 2,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Gauntlet",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "cp0x",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Symbiosis",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Renzo",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

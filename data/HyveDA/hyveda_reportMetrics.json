@@ -1,0 +1,55 @@
+{
+  "network": {
+    "id": "0xE3a148b25Cca54ECCBD3A4aB01e235D154f03eFa",
+    "name": "HyveDA",
+    "timestamp": 1744218370,
+    "date": "2025-04-09 18:06:10"
+  },
+  "economic_security": {
+    "total_restaked_usd": 29639231.67451921,
+    "key_assets": [
+      "ETH"
+    ],
+    "top_collaterals": [
+      "wstETH"
+    ],
+    "fully_utilized_collaterals": [
+      "wstETH"
+    ]
+  },
+  "operators": {
+    "active_operators": {
+      "count": 10,
+      "opted_in_count": 25,
+      "percentage": 40.0
+    },
+    "top_operators": {
+      "top_3_percentage": 30.0,
+      "top_5_percentage": 50.0
+    },
+    "gini_index": 0.0
+  },
+  "vaults": {
+    "total_count": 11,
+    "slashing_status": {
+      "active_resolvers_count": 0,
+      "percentage_with_active_resolvers": 0
+    },
+    "slasher_configuration": {
+      "types": {
+        "VetoSlasher": 100.0
+      }
+    },
+    "delegator_configuration": {
+      "types": {
+        "NetworkRestake": 90.9090909090909,
+        "OperatorSpecific": 9.090909090909092
+      }
+    }
+  },
+  "curators": {
+    "total_count": 9,
+    "network_max_limit_gini_index": 0,
+    "max_limit_top_bottom_ratio": 0
+  }
+}

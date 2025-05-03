@@ -1,0 +1,149 @@
+{
+  "network": {
+    "id": "0xcf128E88E11507aBAd12a7624A34E3d22F731AbC",
+    "name": "Router Xtend Network",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 29697243.56571877,
+      "key_assets": [
+        "ETH"
+      ],
+      "top_collaterals": [
+        "wstETH"
+      ],
+      "fully_utilized_collaterals": [
+        "wstETH"
+      ]
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 13500.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 29697243.56571877,
+          "percentage": 100.0
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 4,
+        "opted_in_count": 16,
+        "percentage": 25.0
+      },
+      "top_operators": {
+        "top_3_percentage": 75.0,
+        "top_5_percentage": 100.0
+      },
+      "gini_index": 0.0
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 7424310.8914296925,
+          "percentage": 25.0
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 7424310.8914296925,
+          "percentage": 25.0
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 7424310.8914296925,
+          "percentage": 25.0
+        },
+        {
+          "operator_id": "0x888F7454E65D213C89bA92020e0d716428898f7f",
+          "label": "Blockdaemon",
+          "usd_value": 7424310.8914296925,
+          "percentage": 25.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x888F7454E65D213C89bA92020e0d716428898f7f",
+          "label": "Blockdaemon",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 1,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 1,
+      "network_max_limit_gini_index": 0,
+      "max_limit_top_bottom_ratio": 0,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "Ether_Fi",
+          "usd_value": 29697243.56571877,
+          "percentage": 100.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "Ether_Fi",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

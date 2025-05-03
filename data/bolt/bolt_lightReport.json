@@ -1,0 +1,269 @@
+{
+  "network": {
+    "id": "0xA42ec46F2c9DC671a72218E145CC13dc119fB722",
+    "name": "bolt",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 1252907.5814354513,
+      "key_assets": [
+        "ETH"
+      ],
+      "top_collaterals": [
+        "wstETH",
+        "rETH"
+      ],
+      "fully_utilized_collaterals": [
+        "swETH",
+        "cbETH",
+        "rETH"
+      ]
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "swETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 64.0
+        },
+        {
+          "asset": "cbETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 64.0
+        },
+        {
+          "asset": "rETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 64.0
+        },
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 87.64,
+          "max_limit": 448.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 863741.5423681338,
+          "percentage": 68.94
+        },
+        {
+          "asset": "rETH",
+          "usd_value": 132902.462197746,
+          "percentage": 10.61
+        },
+        {
+          "asset": "cbETH",
+          "usd_value": 128424.53825304922,
+          "percentage": 10.25
+        },
+        {
+          "asset": "swETH",
+          "usd_value": 127839.03861652249,
+          "percentage": 10.2
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 7,
+        "opted_in_count": 32,
+        "percentage": 21.875
+      },
+      "top_operators": {
+        "top_3_percentage": 62.834766861250024,
+        "top_5_percentage": 90.02236527517127
+      },
+      "gini_index": 0.2977034273754896
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "usd_value": 340635.48173824395,
+          "percentage": 27.19
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 246777.5267651081,
+          "percentage": 19.7
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "usd_value": 199848.54927854016,
+          "percentage": 15.95
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 199848.54927854016,
+          "percentage": 15.95
+        },
+        {
+          "operator_id": "0x4B9F8FEbAfDeD90E66C9896B729196a061d69B2F",
+          "label": "Ryabina",
+          "usd_value": 140786.9324597038,
+          "percentage": 11.24
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 105990.5943054043,
+          "percentage": 8.46
+        },
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "usd_value": 19019.947609911018,
+          "percentage": 1.52
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "vault_count": 6,
+          "collateral_type_count": 4
+        },
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 5,
+          "collateral_type_count": 4
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "vault_count": 5,
+          "collateral_type_count": 4
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 5,
+          "collateral_type_count": 4
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 4,
+          "collateral_type_count": 4
+        },
+        {
+          "operator_id": "0x4B9F8FEbAfDeD90E66C9896B729196a061d69B2F",
+          "label": "Ryabina",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 9,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 77.77777777777779,
+          "OperatorSpecific": 22.22222222222222
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 6,
+      "network_max_limit_gini_index": 0.16666666666666674,
+      "max_limit_top_bottom_ratio": 2.0,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "Gauntlet",
+          "usd_value": 529952.9715270215,
+          "percentage": 42.3
+        },
+        {
+          "curator_id": "Renzo",
+          "usd_value": 281573.8649194076,
+          "percentage": 22.47
+        },
+        {
+          "curator_id": "re7_Labs",
+          "usd_value": 140786.9324597038,
+          "percentage": 11.24
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "usd_value": 140786.9324597038,
+          "percentage": 11.24
+        },
+        {
+          "curator_id": "Ryabina",
+          "usd_value": 140786.9324597038,
+          "percentage": 11.24
+        },
+        {
+          "curator_id": "Everstake",
+          "usd_value": 19019.947609911014,
+          "percentage": 1.52
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "Gauntlet",
+          "vault_count": 4,
+          "collateral_type_count": 4
+        },
+        {
+          "curator_id": "re7_Labs",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Ryabina",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Renzo",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Everstake",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Steakhouse_Financial",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

@@ -264,73 +264,94 @@ export default class ChartDisplay {
       return null;
     }
 
-    // Prepare data (Grouping logic remains the same)
-    const entities = [];
-    const vaultCounts = [];
-    const collateralCounts = [];
+    // Skip grouping into "Others" if we have 6 or fewer entities
+    const showAllEntities = data.length <= 6;
+    console.log(`Showing all entities: ${showAllEntities} (count: ${data.length})`);
 
-    // Get list of small entities from distribution chart
+    // Get list of small entities from distribution chart (only if we need to group)
     let smallEntities = [];
-    if (chartId === 'vault_and_collateral_counts') {
+    if (!showAllEntities && chartId === 'vault_and_collateral_counts') {
       const { networkData, selectedCategory } = appState.getState();
       if (networkData && networkData[selectedCategory] && networkData[selectedCategory].charts) {
         const distributionData = networkData[selectedCategory].charts.distribution;
         if (distributionData && Array.isArray(distributionData)) {
           const total = distributionData.reduce((sum, item) => sum + parseFloat(item.percentage || 0), 0);
           if (total > 0) {
-             distributionData.forEach(item => {
-                const percentage = (parseFloat(item.percentage || 0) / total) * 100;
-                if (percentage < 5) {
-                  const label = selectedCategory === 'operators'
-                     ? (item.label || item.operator_id)
-                     : (item.curator_id || item.label);
-                  if (label) {
-                     smallEntities.push(label);
-                  }
+            distributionData.forEach(item => {
+              const percentage = (parseFloat(item.percentage || 0) / total) * 100;
+              if (percentage < 5) {
+                const label = selectedCategory === 'operators'
+                  ? (item.label || item.operator_id)
+                  : (item.curator_id || item.label);
+                if (label) {
+                  smallEntities.push(label);
                 }
-             });
+              }
+            });
           }
         }
       }
     }
 
-    // Process data for main entities and group others
-    const mainEntities = [];
-    const othersData = {
-      vaultTotal: 0,
-      collateralTotal: 0,
-      count: 0
-    };
+    // Process data - either group small entities or show all
+    const entities = [];
+    const vaultCounts = [];
+    const collateralCounts = [];
+    
+    if (showAllEntities) {
+      // Show all entities without grouping
+      // Sort entities by vault count (descending)
+      const sortedData = [...data].sort((a, b) => {
+        const vaultA = parseInt(a.vault_count || 0);
+        const vaultB = parseInt(b.vault_count || 0);
+        return vaultB - vaultA;
+      });
+      
+      sortedData.forEach(item => {
+        const label = item.label || item.operator_id || item.curator_id || 'Unknown';
+        entities.push(label);
+        vaultCounts.push(parseInt(item.vault_count || 0));
+        collateralCounts.push(parseInt(item.collateral_type_count || 0));
+      });
+    } else {
+      // Group small entities into "Others"
+      const mainEntities = [];
+      const othersData = {
+        vaultTotal: 0,
+        collateralTotal: 0,
+        count: 0
+      };
 
-    data.forEach(item => {
-      const label = item.label || item.operator_id || item.curator_id || 'Unknown';
-      const vaultCount = parseInt(item.vault_count || 0);
-      const collateralCount = parseInt(item.collateral_type_count || 0);
+      data.forEach(item => {
+        const label = item.label || item.operator_id || item.curator_id || 'Unknown';
+        const vaultCount = parseInt(item.vault_count || 0);
+        const collateralCount = parseInt(item.collateral_type_count || 0);
 
-      if (smallEntities.includes(label)) {
-        othersData.vaultTotal += vaultCount;
-        othersData.collateralTotal += collateralCount;
-        othersData.count++;
-      } else {
-        mainEntities.push({ label, vaultCount, collateralCount });
+        if (smallEntities.includes(label)) {
+          othersData.vaultTotal += vaultCount;
+          othersData.collateralTotal += collateralCount;
+          othersData.count++;
+        } else {
+          mainEntities.push({ label, vaultCount, collateralCount });
+        }
+      });
+
+      // Sort entities by vault count (descending)
+      mainEntities.sort((a, b) => b.vaultCount - a.vaultCount);
+
+      // Add entities and their data
+      mainEntities.forEach(entity => {
+        entities.push(entity.label);
+        vaultCounts.push(entity.vaultCount);
+        collateralCounts.push(entity.collateralCount);
+      });
+
+      // Add Others mean if there are any
+      if (othersData.count > 0) {
+        entities.push(`Other(s)`);
+        vaultCounts.push(Math.round(othersData.vaultTotal / othersData.count));
+        collateralCounts.push(Math.round(othersData.collateralTotal / othersData.count));
       }
-    });
-
-    // Sort entities by vault count (descending)
-    mainEntities.sort((a, b) => b.vaultCount - a.vaultCount);
-
-    // Add entities and their data
-    mainEntities.forEach(entity => {
-      entities.push(entity.label);
-      vaultCounts.push(entity.vaultCount);
-      collateralCounts.push(entity.collateralCount);
-    });
-
-    // Add Others mean if there are any
-    if (othersData.count > 0) {
-      entities.push(`Others (mean)`);
-      vaultCounts.push(Math.round(othersData.vaultTotal / othersData.count));
-      collateralCounts.push(Math.round(othersData.collateralTotal / othersData.count));
     }
 
     // Create chart
@@ -345,9 +366,8 @@ export default class ChartDisplay {
             backgroundColor: '#8247e5', // Purple
             borderWidth: 0,
             borderRadius: 4,
-            // *** ADJUSTED FOR COMPACTNESS ***
-            categoryPercentage: 0.85, // Use 85% of the category width (reduces space BETWEEN categories)
-            barPercentage: 0.7       // Keep bar width relative to its slot
+            categoryPercentage: 0.85,
+            barPercentage: 0.7
           },
           {
             label: 'Collateral Count',
@@ -355,9 +375,8 @@ export default class ChartDisplay {
             backgroundColor: '#3b82f6', // Blue
             borderWidth: 0,
             borderRadius: 4,
-            // *** ADJUSTED FOR COMPACTNESS ***
-            categoryPercentage: 0.85, // Use 85% of the category width (reduces space BETWEEN categories)
-            barPercentage: 0.7       // Keep bar width relative to its slot
+            categoryPercentage: 0.85,
+            barPercentage: 0.7
           }
         ]
       },
@@ -373,8 +392,8 @@ export default class ChartDisplay {
             }
           },
           tooltip: {
-             mode: 'index',
-             intersect: false
+            mode: 'index',
+            intersect: false
           }
         },
         scales: {
@@ -395,12 +414,11 @@ export default class ChartDisplay {
           },
           x: {
             grid: {
-              display: false // Keep vertical grid lines off
+              display: false
             },
             ticks: {
-               // Keep rotation
-               maxRotation: 45,
-               minRotation: 45
+              maxRotation: 45,
+              minRotation: 45
             }
           }
         }

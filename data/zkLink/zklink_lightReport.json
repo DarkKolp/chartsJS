@@ -1,0 +1,109 @@
+{
+  "network": {
+    "id": "0x213F448e7a1C8DAEDe41cf94883Cc6149244d00F",
+    "name": "zkLink",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 1261.747598763224,
+      "key_assets": [
+        "ZKL"
+      ],
+      "top_collaterals": [
+        "ZKL"
+      ],
+      "fully_utilized_collaterals": []
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "ZKL",
+          "utilization_percentage": 0.38,
+          "max_limit": 10000000.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "ZKL",
+          "usd_value": 1261.747598763224,
+          "percentage": 100.0
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 1,
+        "opted_in_count": 5,
+        "percentage": 20.0
+      },
+      "top_operators": {
+        "top_3_percentage": 100.0,
+        "top_5_percentage": 100.0
+      },
+      "gini_index": 0
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0xF28aCA7029e35120d0b1205038Ac0c2dfa156288",
+          "label": "zkLink DAO",
+          "usd_value": 1261.7475987632242,
+          "percentage": 100.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0xF28aCA7029e35120d0b1205038Ac0c2dfa156288",
+          "label": "zkLink DAO",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 1,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {}
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 1,
+      "network_max_limit_gini_index": 0,
+      "max_limit_top_bottom_ratio": 0,
+      "collateral_used_for_metrics": "ZKL"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "zkLink",
+          "usd_value": 1261.747598763224,
+          "percentage": 100.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "zkLink",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

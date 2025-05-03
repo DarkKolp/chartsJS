@@ -1,0 +1,135 @@
+{
+  "network": {
+    "id": "0xe4661BDbC4f557d2684F8a7C4aF50572e51D4166",
+    "name": "iBTC Network",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 125993.83565717451,
+      "key_assets": [
+        "BTC"
+      ],
+      "top_collaterals": [
+        "IBTC"
+      ],
+      "fully_utilized_collaterals": []
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "IBTC",
+          "utilization_percentage": 0.56,
+          "max_limit": 235.0
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "IBTC",
+          "usd_value": 125993.83565717451,
+          "percentage": 100.0
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 3,
+        "opted_in_count": 16,
+        "percentage": 18.75
+      },
+      "top_operators": {
+        "top_3_percentage": 100.0,
+        "top_5_percentage": 100.0
+      },
+      "gini_index": 0.0
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "usd_value": 41997.945219058165,
+          "percentage": 33.33
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 41997.945219058165,
+          "percentage": 33.33
+        },
+        {
+          "operator_id": "0xe8e54EA992a3f8aaED7f05de7C1487855674A3cf",
+          "label": "HashKey Cloud",
+          "usd_value": 41997.945219058165,
+          "percentage": 33.33
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0x6f64DeCffDE23AA598724325202f8324c231A682",
+          "label": "Everstake",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xe8e54EA992a3f8aaED7f05de7C1487855674A3cf",
+          "label": "HashKey Cloud",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 1,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 1,
+      "network_max_limit_gini_index": 0,
+      "max_limit_top_bottom_ratio": 0,
+      "collateral_used_for_metrics": "IBTC"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "iBTC_Network",
+          "usd_value": 125993.83565717451,
+          "percentage": 100.0
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "iBTC_Network",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}

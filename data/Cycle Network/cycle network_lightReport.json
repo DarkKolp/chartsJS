@@ -1,0 +1,246 @@
+{
+  "network": {
+    "id": "0x759D4335cb712aa188935C2bD3Aa6D205aC61305",
+    "name": "Cycle Network",
+    "timestamp": 1745923543,
+    "date": "2025-04-29 11:45:43"
+  },
+  "economic_security": {
+    "metrics": {
+      "total_restaked_usd": 18214280.882434566,
+      "key_assets": [
+        "ETH"
+      ],
+      "top_collaterals": [
+        "wstETH",
+        "cbETH"
+      ],
+      "fully_utilized_collaterals": [
+        "cbETH"
+      ]
+    },
+    "charts": {
+      "collateral_utilization": [
+        {
+          "asset": "cbETH",
+          "utilization_percentage": 100.0,
+          "max_limit": 727.2727273
+        },
+        {
+          "asset": "wstETH",
+          "utilization_percentage": 82.68,
+          "max_limit": 9212.121212
+        }
+      ],
+      "collateral_distribution": [
+        {
+          "asset": "wstETH",
+          "usd_value": 16754911.129504278,
+          "percentage": 91.99
+        },
+        {
+          "asset": "cbETH",
+          "usd_value": 1459369.7529302856,
+          "percentage": 8.01
+        }
+      ]
+    }
+  },
+  "operators": {
+    "metrics": {
+      "active_operators": {
+        "count": 7,
+        "opted_in_count": 30,
+        "percentage": 23.333333333333332
+      },
+      "top_operators": {
+        "top_3_percentage": 64.06723217963066,
+        "top_5_percentage": 88.51611596689418
+      },
+      "gini_index": 0.3125237712065404
+    },
+    "charts": {
+      "distribution": [
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "usd_value": 6271318.951400405,
+          "percentage": 34.43
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "usd_value": 2758311.6877795826,
+          "percentage": 15.14
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "usd_value": 2639754.983619446,
+          "percentage": 14.49
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "usd_value": 2361481.471629234,
+          "percentage": 12.96
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "usd_value": 2091706.8940029484,
+          "percentage": 11.48
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "usd_value": 1319877.4918097232,
+          "percentage": 7.25
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "usd_value": 771829.4021932255,
+          "percentage": 4.24
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "operator_id": "0x087c25f83ED20bda587CFA035ED0c96338D4660f",
+          "label": "P2P.org",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x51B6D824bd35AeD4FD1a9E253E41Dc7C9feeFa30",
+          "label": "Pier Two",
+          "vault_count": 5,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xd741F826c60DaCEBB8835278E0F18f1C5DD4c6d0",
+          "label": "Chorus One",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xfF645D02C79141424fb4F8bBB5e494f05067c08B",
+          "label": "Kiln",
+          "vault_count": 4,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0xfd42c11Bf9518A078445b04857B205Fee688b133",
+          "label": "blockscape",
+          "vault_count": 2,
+          "collateral_type_count": 1
+        },
+        {
+          "operator_id": "0xAC128Aa884c64cbE6Afecf5c006D51C2bb1Bf819",
+          "label": "Luganodes",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "operator_id": "0x9321d38c355d1D8cB9dbfC05a5c0f347b1DDa46a",
+          "label": "Nodeinfra",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  },
+  "vaults": {
+    "metrics": {
+      "total_count": 8,
+      "slashing_status": {
+        "active_resolvers_count": 0,
+        "percentage_with_active_resolvers": 0.0
+      },
+      "slasher_configuration": {
+        "types": {
+          "VetoSlasher": 100.0
+        }
+      },
+      "delegator_configuration": {
+        "types": {
+          "NetworkRestake": 100.0
+        }
+      }
+    }
+  },
+  "curators": {
+    "metrics": {
+      "total_count": 6,
+      "network_max_limit_gini_index": 0.14556040755655553,
+      "max_limit_top_bottom_ratio": 1.8403361343838711,
+      "collateral_used_for_metrics": "wstETH"
+    },
+    "charts": {
+      "distribution": [
+        {
+          "curator_id": "re7_Labs",
+          "usd_value": 6599387.459048615,
+          "percentage": 36.23
+        },
+        {
+          "curator_id": "Gauntlet",
+          "usd_value": 3859147.010966127,
+          "percentage": 21.19
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "usd_value": 3299693.7295243074,
+          "percentage": 18.12
+        },
+        {
+          "curator_id": "MEV_Capital",
+          "usd_value": 3299693.7295243074,
+          "percentage": 18.12
+        },
+        {
+          "curator_id": "Renzo",
+          "usd_value": 666604.793776634,
+          "percentage": 3.66
+        },
+        {
+          "curator_id": "Chorus_One",
+          "usd_value": 489754.1595945725,
+          "percentage": 2.69
+        }
+      ],
+      "vault_and_collateral_counts": [
+        {
+          "curator_id": "re7_Labs",
+          "vault_count": 2,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Gauntlet",
+          "vault_count": 2,
+          "collateral_type_count": 2
+        },
+        {
+          "curator_id": "Chorus_One",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "MEV_Capital",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Ether_Fi",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        },
+        {
+          "curator_id": "Renzo",
+          "vault_count": 1,
+          "collateral_type_count": 1
+        }
+      ]
+    }
+  }
+}
